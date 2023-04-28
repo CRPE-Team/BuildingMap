@@ -50,40 +50,6 @@ namespace BuildingMap.UI.Components
             Focusable = true;
         }
 
-        private void UpdateCentralPoint()
-        {
-            var size = _gridSize;
-
-            //var fieldSize = new Vector(ActualWidth, ActualHeight);
-            //var parts = fieldSize / oldSize;
-            //var newSize = parts * size;
-
-            //var offset = (newSize - fieldSize) / 2;
-            //offset.X = (int)offset.X;
-            //offset.Y = (int)-offset.Y;
-
-            //Shift(-offset);
-
-            var fieldSize = GetSize();
-            var centerPoint = fieldSize / 2 - new Vector(_shift.X, _shift.Y);
-            var newCentralPoint = _center * size;
-
-            var offset = newCentralPoint - centerPoint;
-            offset.X = offset.X;
-            offset.Y = offset.Y;
-
-            Shift(-offset);
-
-            var cp = fieldSize / 2 - new Vector(_shift.X, _shift.Y);
-
-            var p = cp / size;
-            foreach (var child in Children.OfType<VertexView>())
-            {
-                child.Position = new Point(size * (int)p.X, ActualHeight -size * (int)p.Y);
-            }
-            Debug.WriteLine($"{p}           {cp}        {new Point(size * (int)p.X, size * (int)p.Y)}    {_offset}");
-        }
-
         private void SetGridSize(int gridSize)
         {
             _gridSize = gridSize;
@@ -144,11 +110,10 @@ namespace BuildingMap.UI.Components
 
         private Vector _offset;
         private Vector _shift;
-        private Vector _center;
 
         public void Drag(Point position, Vector offset)
         {
-            Shift(offset, true);
+            Shift(offset);
         }
 
         protected override void OnMouseDown(MouseButtonEventArgs e)
@@ -164,86 +129,66 @@ namespace BuildingMap.UI.Components
             }
             else if (e.Key == Key.F)
             {
-                Shift(new Vector(), true);
+                Shift(new Vector());
             }
             else if (e.Key == Key.Right)
             {
-                Shift(new Vector(1, 0), true);
+                Shift(new Vector(1, 0));
             }
             else if (e.Key == Key.Left)
             {
-                Shift(new Vector(-1, 0), true);
+                Shift(new Vector(-1, 0));
             }
             else if (e.Key == Key.Up)
             {
-                Shift(new Vector(0, -1), true);
+                Shift(new Vector(0, -1));
             }
             else if (e.Key == Key.Down)
             {
-                Shift(new Vector(0, 1), true);
+                Shift(new Vector(0, 1));
             }
         }
 
         protected override void OnPreviewMouseWheel(MouseWheelEventArgs e)
         {
-            var diff = e.Delta / 800d;
+            var diff = 1 + e.Delta / 1700d;
 
             var oldScale = _scaleTransform.ScaleX;
-            var newScale = Math.Max(0.4, Math.Min(10, oldScale + diff));
+            var newScale = Math.Max(0.4, Math.Min(10, oldScale * diff));
 
             _scaleTransform.ScaleX = _scaleTransform.ScaleY = newScale;
 
             UpdateShift();
         }
 
-        private void Shift(Vector offset, bool updateCenter = false)
+        private void Shift(Vector offset)
         {
-            var sectionSize = _gridSize * 2 * _scaleTransform.ScaleX;
-            _offset += offset / sectionSize;
+            var gridSize = _gridSize * _scaleTransform.ScaleX;
 
-            var oldShift = _shift;
-            _shift = new Vector(_offset.X % 1, _offset.Y % 1);
+            _offset += offset / gridSize;
 
-            Move(oldShift, offset);
+            _shift = new Vector(_offset.X % 2, _offset.Y % 2);
 
-            if (updateCenter)
-            {
-                _center = GetSize() / _gridSize;
-            }
-
-            Debug.WriteLine($"{_scaleTransform.ScaleX}    {RenderTransformOrigin}       {_offset}    {_offset.Floor()}    {_shift}");
+            Move();
         }
 
-        private void Move(Vector oldShift, Vector realOffset)
+        private void Move()
         {
             UpdateShift();
 
             foreach (var child in Children.OfType<VertexView>())
             {
-                var pos = (child.RealPos.ToVector() + _offset.Floor()) * _gridSize * 2;
+                var pos = (child.RealPos.ToVector() + (_offset / 2).Floor() * 2) * _gridSize;
 
                 child.Position = pos.ToPoint();
-
-                Debug.WriteLine($"{pos}");
             }
         }
 
         private void UpdateShift()
         {
-            var sectionSize = _gridSize * 2 * _scaleTransform.ScaleX;
+            var sectionSize = _gridSize * _scaleTransform.ScaleX;
             _translateTransform.X = _shift.X * sectionSize;
             _translateTransform.Y = _shift.Y * sectionSize;
-        }
-
-        private Thickness Move(Thickness margin, Vector offset)
-        {
-            return new Thickness(margin.Left + offset.X, margin.Top + offset.Y, margin.Right - offset.X, margin.Bottom - offset.Y);
-        }
-
-        private Vector GetSize()
-        {
-            var fieldSize = ((FrameworkElement)((FrameworkElement)Parent).Parent).DesiredSize;
-            return new Vector(fieldSize.Width, fieldSize.Height);
         }
     }
 }
