@@ -4,7 +4,7 @@ namespace BuildingMap.UI.Components
 {
     public class MainFieldGrid : DragGrid
     {
-        protected override void OnMouseWheel(MouseWheelEventArgs e)
+        protected override void OnPreviewMouseWheel(MouseWheelEventArgs e)
         {
             var offset = e.Delta / 10d;
 

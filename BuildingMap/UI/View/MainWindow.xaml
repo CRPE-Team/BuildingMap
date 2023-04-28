@@ -8,12 +8,18 @@
         mc:Ignorable="d"
         Title="MainWindow" Height="450" Width="800">
     <Grid>
-        <Viewbox Stretch="UniformToFill">
+        <components:MainFieldGrid>
+            <components:BuildingGrid ShowGrid="True" GridSize="50">
+                <components:VertexView RealPos="2, 2" />
+            </components:BuildingGrid>
+        </components:MainFieldGrid>
+
+        <!--<Viewbox Stretch="UniformToFill">
             <components:MainFieldGrid Height="1000" Width="1000">
-                <components:BuildingGrid ShowGrid="True" GridSize="10" GridZoom="7">
-                    <components:VertexView HorizontalAlignment="Right" Margin="0,0,585,436" VerticalAlignment="Bottom" />
+                <components:BuildingGrid ShowGrid="True" GridSize="50">
+                    <components:VertexView Position="1000, 450" />
                 </components:BuildingGrid>
             </components:MainFieldGrid>
-        </Viewbox>
+        </Viewbox>-->
     </Grid>
 </Window>

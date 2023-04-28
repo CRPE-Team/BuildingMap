@@ -24,7 +24,9 @@ namespace BuildingMap.UI.Components
 		private bool _selected;
 		private Point _position;
 
-		public VertexView()
+        private readonly TranslateTransform _translateTransform;
+
+        public VertexView()
 		{
 			HorizontalAlignment = HorizontalAlignment.Left;
 			VerticalAlignment = VerticalAlignment.Top;
@@ -43,7 +45,9 @@ namespace BuildingMap.UI.Components
 			_numberLabel.Margin = new Thickness(0, -1.5, 0, 0);
 			_numberLabel.FontSize = 13;
 			_numberLabel.FontWeight = FontWeights.Bold;
-		}
+
+			RenderTransform = _translateTransform = new TranslateTransform();
+        }
 
 		public int Id { get; } = _idCounter++;
 
@@ -84,9 +88,12 @@ namespace BuildingMap.UI.Components
 			set
 			{
 				_position = value;
-				Margin = new Thickness(_position.X - Size / 2, _position.Y - Size / 2, 0, 0);
+                _translateTransform.X = _position.X - Size / 2;
+				_translateTransform.Y = _position.Y - Size / 2;
 			}
 		}
+
+		public Point RealPos { get; set; } //Test
 
 		public bool ShowNumber
 		{

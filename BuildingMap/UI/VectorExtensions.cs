@@ -34,5 +34,25 @@ namespace BuildingMap.UI
             vector.Y = element.RenderSize.Height - vector.Y;
             return vector;
         }
+
+        public static Vector Floor(this Vector vector)
+        {
+            return new Vector((int)vector.X, (int)vector.Y);
+        }
+
+        public static Vector Floor(this Point vector)
+        {
+            return new Vector(Math.Floor(vector.X), Math.Floor(vector.Y));
+        }
+
+        public static Point ToPoint(this Vector vector)
+        {
+            return new Point(vector.X, vector.Y);
+        }
+
+        public static Vector ToVector(this Point vector)
+        {
+            return new Vector(vector.X, vector.Y);
+        }
     }
 }
