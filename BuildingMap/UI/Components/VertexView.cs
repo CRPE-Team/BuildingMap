@@ -1,5 +1,4 @@
-﻿using System;
-using System.Windows;
+﻿using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media;
@@ -26,6 +25,8 @@ namespace BuildingMap.UI.Components
 		private Point _position;
 
 		private BuildingGrid _grid;
+
+        public bool CanDrag => _grid?.AllowEdit ?? false;
 
         private readonly TranslateTransform _translateTransform;
 
@@ -109,8 +110,8 @@ namespace BuildingMap.UI.Components
 
 		private void UpdatePosition()
 		{
-            var position = (_position.ToVector() + (_grid.Offset / 2).FloorInt() * 2) * _grid.GridSize;
-			position = (position / _grid.GridSize).Round() * _grid.GridSize;
+            var position = (_position.ToVector() + (_grid.RenderOffset / 2).FloorInt() * 2) * _grid.Grid.GridSize;
+			position = (position / _grid.Grid.GridSize).Round() * _grid.Grid.GridSize;
 
             _translateTransform.X = position.X - Size / 2;
             _translateTransform.Y = position.Y - Size / 2;
@@ -146,7 +147,7 @@ namespace BuildingMap.UI.Components
 
         public void Drag(Point position, Vector offset)
         {
-            Position += offset / (_grid.GridSize * _grid.Zoom);
+            Position += offset / _grid.RenderGridSize;
         }
     }
 }

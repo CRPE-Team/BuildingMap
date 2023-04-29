@@ -2,8 +2,8 @@
 {
     public interface IDrawable
     {
-        public void StartDraw();
-        public void Draw();
-        public bool EndDraw();
+        void StartDraw();
+        void Draw();
+        bool EndDraw();
     }
 }

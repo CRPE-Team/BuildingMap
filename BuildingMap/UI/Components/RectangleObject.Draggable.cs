@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Diagnostics;
 using System.Windows;
 using System.Windows.Input;
 
@@ -9,17 +8,19 @@ namespace BuildingMap.UI.Components
     {
         private static readonly DragContext DragContext = new DragContext();
 
-        private ResizeDirection? _resizing;
+        private ResizeDirection? _reseDirection;
         private Vector _resizeFirst;
         private Vector _resizeSecond;
 
         private Cursor _defaultCursor;
 
+        public bool CanDrag => (Grid?.AllowEdit ?? false) && Mouse.LeftButton == MouseButtonState.Pressed;
+
         public DragContext StartDrag()
         {
             if (IsMouseNearCorner(out var direction))
             {
-                _resizing = direction;
+                _reseDirection = direction;
 
                 _defaultCursor = Mouse.OverrideCursor;
                 Mouse.OverrideCursor = direction.ToCursor() ?? _defaultCursor;
@@ -35,23 +36,23 @@ namespace BuildingMap.UI.Components
         {
             Position = Position.Round();
 
-            if (_resizing != null)
+            if (_reseDirection != null)
             {
                 Size = Size.Round();
 
-                _resizing = null;
+                _reseDirection = null;
                 Mouse.OverrideCursor = _defaultCursor;
 
                 if (Size.IsZeroSize())
                 {
-                    _grid.Children.Remove(this);
+                    Grid.Children.Remove(this);
                 }
             }
         }
 
         public void Drag(Point position, Vector offset)
         {
-            if (_resizing != null)
+            if (_reseDirection != null)
             {
                 Resize(offset);
             }
@@ -63,31 +64,27 @@ namespace BuildingMap.UI.Components
 
         private void Resize(Vector offset)
         {
-            var shift = offset / (_grid.GridSize * _grid.Zoom);
+            var shift = offset / Grid.RenderGridSize;
 
-            Trace.TraceInformation($"{_resizeFirst}   {_resizeSecond}   {shift}");
-
-            if (_resizing == ResizeDirection.West || _resizing == ResizeDirection.NorthWest || _resizing == ResizeDirection.SouthWest)
+            if (_reseDirection == ResizeDirection.West || _reseDirection == ResizeDirection.NorthWest || _reseDirection == ResizeDirection.SouthWest)
             {
                 _resizeFirst.X += shift.X;
             } 
-            else if (_resizing == ResizeDirection.East || _resizing == ResizeDirection.NorthEast || _resizing == ResizeDirection.SouthEast)
+            else if (_reseDirection == ResizeDirection.East || _reseDirection == ResizeDirection.NorthEast || _reseDirection == ResizeDirection.SouthEast)
             {
                 _resizeSecond.X += shift.X;
             }
 
-            if (_resizing == ResizeDirection.North || _resizing == ResizeDirection.NorthWest || _resizing == ResizeDirection.NorthEast)
+            if (_reseDirection == ResizeDirection.North || _reseDirection == ResizeDirection.NorthWest || _reseDirection == ResizeDirection.NorthEast)
             {
                 _resizeFirst.Y += shift.Y;
             }
-            else if (_resizing == ResizeDirection.South || _resizing == ResizeDirection.SouthWest || _resizing == ResizeDirection.SouthEast)
+            else if (_reseDirection == ResizeDirection.South || _reseDirection == ResizeDirection.SouthWest || _reseDirection == ResizeDirection.SouthEast)
             {
                 _resizeSecond.Y += shift.Y;
             }
 
             UpdateShape(_resizeFirst, _resizeSecond);
-
-            Trace.TraceInformation($"{_resizeFirst} {_resizeSecond}");
         }
 
         private void UpdateShape(Vector first, Vector second)
@@ -123,16 +120,16 @@ namespace BuildingMap.UI.Components
 
         private void Move(Vector offset)
         {
-            Position += offset / (_grid.GridSize * _grid.Zoom);
+            Position += offset / Grid.RenderGridSize;
         }
 
         protected override void OnMouseMove(MouseEventArgs e)
         {
             base.OnMouseMove(e);
 
-            if (_resizing == null && !_drawing)
+            if (_reseDirection == null && !_drawing)
             {
-                if (IsMouseNearCorner(out var direction))
+                if (Grid.AllowEdit && IsMouseNearCorner(out var direction))
                 {
                     Cursor = direction.ToCursor();
                 }
@@ -152,7 +149,7 @@ namespace BuildingMap.UI.Components
             var cornerNear = near * 2;
             var minNearFakeSize = 10;
 
-            var mousePosition = _grid.MousePosition;
+            var mousePosition = Grid.MousePosition;
             var positionVector = Position.ToVector();
 
             var firstDiff = (positionVector - mousePosition).Abs();

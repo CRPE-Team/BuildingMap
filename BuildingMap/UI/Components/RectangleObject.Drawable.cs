@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Windows;
-using System.Windows.Media;
 
 namespace BuildingMap.UI.Components
 {
@@ -12,14 +11,14 @@ namespace BuildingMap.UI.Components
         public void StartDraw()
         {
             _drawing = true;
-            _startDrawPosition = _grid.MousePosition;
+            _startDrawPosition = Grid.MousePosition;
 
             Position = _startDrawPosition.Floor().ToPoint();
         }
 
         public void Draw()
         {
-            DrawShape(_startDrawPosition, _grid.MousePosition);
+            DrawShape(_startDrawPosition, Grid.MousePosition);
         }
 
         private void DrawShape(Vector first, Vector second)

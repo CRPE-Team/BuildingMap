@@ -8,7 +8,7 @@ namespace BuildingMap.UI.Components
         {
             var offset = e.Delta / 10d;
 
-            Height = Width = Width - offset;
+            //Height = Width -= offset;
         }
     }
 }

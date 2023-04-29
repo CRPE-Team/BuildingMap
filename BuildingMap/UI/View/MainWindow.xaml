@@ -9,7 +9,18 @@
         Title="MainWindow" Height="450" Width="800">
     <Grid>
         <components:MainFieldGrid>
-            <components:BuildingGrid ShowGrid="True" GridSize="5">
+            <components:BuildingGrid AllowEdit="True">
+                <components:BuildingGrid.Grid>
+                    <components:GridBackground ShowGrid="True" GridSize="5"/>
+                </components:BuildingGrid.Grid>
+                
+                <components:BuildingGrid.BackgroundImage>
+                    <components:ImageBackground Scale="0.2" ImageSourcePath="C:\Users\Lashov\source\repos\BuildingMap\BuildingMap\UI\View\Izuku-Midoriya-Изуку-Мидория-Моя-Геройская-Академия-арты-картинки-12.jpg"/>
+                </components:BuildingGrid.BackgroundImage>
+                
+                <!--<components:BuildingGrid.Background>
+                    <ImageBrush ImageSource="/UI/View/Izuku-Midoriya-Изуку-Мидория-Моя-Геройская-Академия-арты-картинки-12.jpg" TileMode="None" Stretch="None"/>
+                </components:BuildingGrid.Background>-->
                 <components:VertexView Position="0, 0" />
                 <components:RectangleObject Position="1, 1" Size="1, 2" />
             </components:BuildingGrid>

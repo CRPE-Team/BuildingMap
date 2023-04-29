@@ -1,23 +1,18 @@
 ﻿using System.Windows;
-using System.Windows.Controls;
 using System.Windows.Media;
 using System.Windows.Shapes;
 
 namespace BuildingMap.UI.Components
 {
-    public partial class RectangleObject : Grid, IBuildingGridItem
+    public partial class RectangleObject : BuildingGridItem
     {
+        private static readonly Brush UnselectedBrush = new SolidColorBrush(Color.FromRgb(0x00, 0xD3, 0xEA));
+
         private const int AuraSize = 4;
 
-        private BuildingGrid _grid;
-
         private readonly Rectangle _rectangle;
-        private readonly TranslateTransform _translateTransform;
 
-        private Point _position;
         private Size _size;
-
-        private static readonly Brush UnselectedColor = new SolidColorBrush(Color.FromRgb(0x00, 0xD3, 0xEA));
 
         public RectangleObject()
         {
@@ -27,36 +22,18 @@ namespace BuildingMap.UI.Components
             Background = new SolidColorBrush(Color.FromArgb(0, 0, 0, 0));
 
             Children.Add(_rectangle = new Rectangle());
-            _rectangle.Fill = UnselectedColor;
+            _rectangle.Fill = UnselectedBrush;
             _rectangle.Margin = new Thickness(AuraSize);
 
-            RenderTransform = _translateTransform = new TranslateTransform();
-
+            //debug
             _rectangle.RadiusX = 10;
             _rectangle.RadiusY = 10;
         }
 
-        protected override void OnVisualParentChanged(DependencyObject oldParent)
+        public override void Update()
         {
-            _grid = Parent as BuildingGrid;
-
-            base.OnVisualParentChanged(oldParent);
-        }
-
-        public void Update()
-        {
-            UpdatePosition();
+            base.Update();
             UpdateSize();
-        }
-
-        public Point Position
-        {
-            get => _position;
-            set
-            {
-                _position = value;
-                UpdatePosition();
-            }
         }
 
         public Size Size
@@ -69,18 +46,14 @@ namespace BuildingMap.UI.Components
             }
         }
 
-        private void UpdatePosition()
+        protected override void UpdatePosition(Vector position)
         {
-            var position = (_position.ToVector() + (_grid.Offset / 2).FloorInt() * 2) * _grid.GridSize;
-            position = (position / _grid.GridSize - new Vector(0.001, 0.001)).Round() * _grid.GridSize;
-
-            _translateTransform.X = position.X - AuraSize;
-            _translateTransform.Y = position.Y - AuraSize;
+            base.UpdatePosition(position - new Vector(AuraSize, AuraSize));
         }
 
         private void UpdateSize()
         {
-            var size = (_size.ToVector() + new Vector(0.001, 0.001)).Round() * _grid.GridSize;
+            var size = (_size.ToVector() + new Vector(0.001, 0.001)).Round() * Grid.Grid.GridSize;
 
             Width = (_rectangle.Width = size.X) + AuraSize * 2;
             Height = (_rectangle.Height = size.Y) + AuraSize * 2;

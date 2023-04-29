@@ -1,6 +1,4 @@
-﻿using System;
-using System.Diagnostics;
-using System.Windows;
+﻿using System.Windows;
 using System.Windows.Input;
 
 namespace BuildingMap.UI
@@ -8,15 +6,15 @@ namespace BuildingMap.UI
     public class DragManager
     {
         private DragContext _dragContext;
-        private bool _dragging;
+        private static bool _dragging;
         private bool _moving;
         private Point _mouseStartPosition;
 
-        public bool Dragging => _dragging;
+        public static bool Dragging => _dragging;
         public bool Moving => _moving;
 
         public UIElement Source { get; }
-        public IDraggable SelectedElement { get; private set; }
+        public static IDraggable SelectedElement { get; private set; }
 
         public DragManager(UIElement source)
         {
@@ -31,7 +29,7 @@ namespace BuildingMap.UI
 
             while (directlyOver != null)
             {
-                if (directlyOver is IDraggable draggable) return draggable;
+                if (directlyOver is IDraggable draggable && draggable.CanDrag) return draggable;
                 var parent = directlyOver.Parent ?? directlyOver.TemplatedParent;
 
                 directlyOver = parent as FrameworkElement;
@@ -82,6 +80,12 @@ namespace BuildingMap.UI
         private void MouseMove(object source, MouseEventArgs e)
         {
             if (!_dragging) return;
+
+            if (!SelectedElement.CanDrag)
+            {
+                StopDrag();
+                return;
+            }
 
             var current = e.GetPosition(Source);
             var offset = current - _mouseStartPosition;
