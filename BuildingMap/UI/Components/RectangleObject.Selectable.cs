@@ -28,9 +28,9 @@ namespace BuildingMap.UI.Components
             _rectangle.Fill = UnselectedBrush;
 
             Application.Current.MainWindow.KeyDown -= OnKeyDown;
-        }
+        }   
 
-        protected void OnKeyDown(object source, KeyEventArgs e)
+        protected virtual void OnKeyDown(object source, KeyEventArgs e)
         {
             if (e.Key == Key.Escape)
             {
@@ -39,6 +39,10 @@ namespace BuildingMap.UI.Components
             else if (e.Key == Key.Delete && Grid.AllowEdit)
             {
                 Grid.Children.Remove(this);
+            }
+            else if (e.Key == Key.C && Keyboard.Modifiers.HasFlag(ModifierKeys.Control))
+            {
+                ICopyable.CopyToCache(this);
             }
         }
 

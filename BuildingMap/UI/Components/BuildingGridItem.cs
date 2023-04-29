@@ -1,10 +1,11 @@
-﻿using System.Windows;
+﻿using System;
+using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
 
 namespace BuildingMap.UI.Components
 {
-    public class BuildingGridItem : Grid, IBuildingGridItem
+    public class BuildingGridItem : Grid, IBuildingGridItem, ICopyable
     {
         private Point _position;
 
@@ -55,6 +56,14 @@ namespace BuildingMap.UI.Components
         {
             _translateTransform.X = position.X;
             _translateTransform.Y = position.Y;
+        }
+
+        public virtual ICopyable CreateCopy()
+        {
+            var copy = (BuildingGridItem)Activator.CreateInstance(GetType());
+            copy._position = _position;
+
+            return copy;
         }
     }
 }

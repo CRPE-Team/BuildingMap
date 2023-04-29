@@ -46,6 +46,13 @@ namespace BuildingMap.UI.Components
             }
         }
 
+        public override ICopyable CreateCopy()
+        {
+            var copy = (RectangleObject)base.CreateCopy();
+            copy._size = _size;
+            return copy;
+        }
+
         protected override void UpdatePosition(Vector position)
         {
             base.UpdatePosition(position - new Vector(AuraSize, AuraSize));

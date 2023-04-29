@@ -78,7 +78,7 @@ namespace BuildingMap.UI.Components
             Grid = new GridBackground();
 
             //debug
-            //Application.Current.MainWindow.KeyDown += OnKeyDown;
+            Application.Current.MainWindow.KeyDown += OnKeyDown;
         }
 
         protected override void OnRenderSizeChanged(SizeChangedInfo sizeInfo)
@@ -175,6 +175,11 @@ namespace BuildingMap.UI.Components
             else if (e.Key == Key.Down)
             {
                 Shift(new Vector(0, 5));
+            }
+            else if (e.Key == Key.V && Keyboard.Modifiers.HasFlag(ModifierKeys.Control))
+            {
+                var copy = ICopyable.GetCopy() as UIElement;
+                if (copy != null) Children.Add(copy);
             }
         }
 
