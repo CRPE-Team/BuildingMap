@@ -50,6 +50,14 @@ namespace BuildingMap.UI
             SelectedElement = element;
             _dragContext = element.StartDrag();
 
+            if (_dragContext == null)
+            {
+                SelectedElement = null;
+                _dragging = false;
+
+                return false;
+            }
+
             Mouse.AddPreviewMouseMoveHandler(Source, MouseMove);
 
             return true;

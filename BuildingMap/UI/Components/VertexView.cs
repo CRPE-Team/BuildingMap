@@ -1,4 +1,5 @@
-﻿using System.Windows;
+﻿using System;
+using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media;
@@ -23,6 +24,8 @@ namespace BuildingMap.UI.Components
 		private int _number;
 		private bool _selected;
 		private Point _position;
+
+		private BuildingGrid _grid;
 
         private readonly TranslateTransform _translateTransform;
 
@@ -49,7 +52,12 @@ namespace BuildingMap.UI.Components
 			RenderTransform = _translateTransform = new TranslateTransform();
         }
 
-		public int Id { get; } = _idCounter++;
+        protected override void OnVisualParentChanged(DependencyObject oldParent)
+        {
+            _grid = Parent as BuildingGrid;
+        }
+
+        public int Id { get; } = _idCounter++;
 
 		protected override void OnMouseDown(MouseButtonEventArgs e) => ProcessRoutedEvent(e);
 		protected override void OnMouseUp(MouseButtonEventArgs e) => ProcessRoutedEvent(e);
@@ -88,12 +96,13 @@ namespace BuildingMap.UI.Components
 			set
 			{
 				_position = value;
-                _translateTransform.X = _position.X - Size / 2;
-				_translateTransform.Y = _position.Y - Size / 2;
+
+                var position = (_position.ToVector() + (_grid.Offset / 2).Floor() * 2) * _grid.GridSize;
+
+                _translateTransform.X = Math.Round(position.X / _grid.GridSize) * _grid.GridSize - Size / 2;
+				_translateTransform.Y = Math.Round(position.Y / _grid.GridSize) * _grid.GridSize - Size / 2;
 			}
 		}
-
-		public Point RealPos { get; set; } //Test
 
 		public bool ShowNumber
 		{
@@ -125,7 +134,7 @@ namespace BuildingMap.UI.Components
 
         public void Drag(Point position, Vector offset)
         {
-            Position += offset;
+            Position += offset / (_grid.GridSize * _grid.Zoom);
         }
     }
 }

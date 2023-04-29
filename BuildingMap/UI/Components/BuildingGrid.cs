@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Diagnostics;
-using System.Drawing.Printing;
 using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
@@ -8,31 +7,41 @@ using System.Windows.Input;
 using System.Windows.Interop;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
-using System.Windows.Shapes;
 
 namespace BuildingMap.UI.Components
 {
     public partial class BuildingGrid : Grid, IDraggable
     {
         private static readonly DragContext DragContext = new DragContext();
-        private const int GridReserve = 600;
+        private const int GridReserve = 2000;
 
         private bool _showGrid = false;
         private int _gridSize;
+
+        private Vector _offset;
+        private Vector _shift;
+        private Vector _offsetCenterFix;
 
         private readonly ScaleTransform _scaleTransform;
         private readonly TranslateTransform _translateTransform;
 
         private Brush _gridBrush;
-        private readonly Thickness _originMargin;
 
         public bool ShowGrid { get => _showGrid; set => SetShowGrid(value); }
 
         public int GridSize { get => _gridSize; set => SetGridSize(value); }
 
+        public double Zoom { get => _scaleTransform.ScaleX; set => _scaleTransform.ScaleX = _scaleTransform.ScaleY = value; }
+
+        public Vector Offset => _offset;
+
+        public Vector RealOffset { get => _offset - _offsetCenterFix; set => _offset = value + _offsetCenterFix; }
+
+        public Vector MousePosition => Mouse.GetPosition(this).ToVector() / _gridSize + _shift - _offset;
+
         public BuildingGrid()
         {
-            _originMargin = Margin;// = new Thickness(Margin.Left - GridReserve, Margin.Top - GridReserve, Margin.Right - GridReserve, Margin.Bottom - GridReserve);
+            Margin = new Thickness(Margin.Left - GridReserve, Margin.Top - GridReserve, Margin.Right - GridReserve, Margin.Bottom - GridReserve);
 
             RenderTransformOrigin = new Point(0.5, 0.5);
 
@@ -84,6 +93,15 @@ namespace BuildingMap.UI.Components
             SetShowGrid(_showGrid);
         }
 
+        protected override void OnRenderSizeChanged(SizeChangedInfo sizeInfo)
+        {
+            _offset -= _offsetCenterFix;
+            _offset += _offsetCenterFix = new Vector(sizeInfo.NewSize.Width, sizeInfo.NewSize.Height) / _gridSize / 2;
+            Shift();
+
+            base.OnRenderSizeChanged(sizeInfo);
+        }
+
         private void SetShowGrid(bool showGrid)
         {
             _showGrid = showGrid;
@@ -100,16 +118,13 @@ namespace BuildingMap.UI.Components
 
         public DragContext StartDrag()
         {
-            return DragContext;
+            return Mouse.RightButton == MouseButtonState.Pressed ? DragContext : null;
         }
 
         public void StopDrag()
         {
 
         }
-
-        private Vector _offset;
-        private Vector _shift;
 
         public void Drag(Point position, Vector offset)
         {
@@ -119,6 +134,8 @@ namespace BuildingMap.UI.Components
         protected override void OnMouseDown(MouseButtonEventArgs e)
         {
             Focus();
+
+            Trace.TraceInformation($"{MousePosition}");
         }
 
         protected override void OnKeyDown(KeyEventArgs e)
@@ -151,44 +168,49 @@ namespace BuildingMap.UI.Components
 
         protected override void OnPreviewMouseWheel(MouseWheelEventArgs e)
         {
+            var mouseFromCenterPos = Mouse.GetPosition(this).ToVector() / _gridSize + _shift - _offsetCenterFix;
+
             var diff = 1 + e.Delta / 1700d;
-
-            var oldScale = _scaleTransform.ScaleX;
-            var newScale = Math.Max(0.4, Math.Min(10, oldScale * diff));
-
-            _scaleTransform.ScaleX = _scaleTransform.ScaleY = newScale;
+            Zoom = Math.Max(0.4, Math.Min(10, Zoom * diff));
 
             UpdateShift();
+
+            var newMouseFromCenterPos = Mouse.GetPosition(this).ToVector() / _gridSize + _shift - _offsetCenterFix;
+            _offset -= mouseFromCenterPos - newMouseFromCenterPos;
+
+            Shift();
         }
 
-        private void Shift(Vector offset)
+        private void Shift(Vector offset = default)
         {
-            var gridSize = _gridSize * _scaleTransform.ScaleX;
+            var gridSize = _gridSize * Zoom;
 
             _offset += offset / gridSize;
 
-            _shift = new Vector(_offset.X % 2, _offset.Y % 2);
-
+            UpdateShift();
             Move();
         }
 
         private void Move()
         {
-            UpdateShift();
-
             foreach (var child in Children.OfType<VertexView>())
             {
-                var pos = (child.RealPos.ToVector() + (_offset / 2).Floor() * 2) * _gridSize;
+                //var pos = (child.Position.ToVector() + (_offset / 2).Floor() * 2) * _gridSize;
 
-                child.Position = pos.ToPoint();
+                //child.Position = pos.ToPoint();
+
+                child.Position = child.Position;
             }
         }
 
         private void UpdateShift()
         {
-            var sectionSize = _gridSize * _scaleTransform.ScaleX;
-            _translateTransform.X = _shift.X * sectionSize;
-            _translateTransform.Y = _shift.Y * sectionSize;
+            var gridSize = _gridSize * Zoom;
+
+            _shift = new Vector(_offset.X % 2, _offset.Y % 2);
+
+            _translateTransform.X = _shift.X * gridSize;
+            _translateTransform.Y = _shift.Y * gridSize;
         }
     }
 }

@@ -10,7 +10,7 @@
     <Grid>
         <components:MainFieldGrid>
             <components:BuildingGrid ShowGrid="True" GridSize="50">
-                <components:VertexView RealPos="2, 2" />
+                <components:VertexView Position="0, 0" />
             </components:BuildingGrid>
         </components:MainFieldGrid>
 
