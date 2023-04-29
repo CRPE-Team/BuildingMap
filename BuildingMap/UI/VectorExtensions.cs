@@ -94,5 +94,15 @@ namespace BuildingMap.UI
         {
             return new Size(vector.X, vector.Y);
         }
+
+        public static Size Round(this Size size)
+        {
+            return new Size(Math.Round(size.Width), Math.Round(size.Height));
+        }
+
+        public static bool IsZeroSize(this Size size)
+        {
+            return size.Width == 0 || size.Height == 0;
+        }
     }
 }

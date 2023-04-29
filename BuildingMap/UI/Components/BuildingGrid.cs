@@ -167,6 +167,10 @@ namespace BuildingMap.UI.Components
             {
                 Shift(new Vector());
             }
+            else if (e.Key == Key.G)
+            {
+                ShowGrid = !ShowGrid;
+            }
             else if (e.Key == Key.Right)
             {
                 Shift(new Vector(5, 0));

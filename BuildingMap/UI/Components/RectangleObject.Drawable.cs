@@ -19,30 +19,34 @@ namespace BuildingMap.UI.Components
 
         public void Draw()
         {
-            var secondPosition = _grid.MousePosition;
+            DrawShape(_startDrawPosition, _grid.MousePosition);
+        }
+
+        private void DrawShape(Vector first, Vector second)
+        {
             Point pos;
             Size size;
 
-            if (_startDrawPosition.X < secondPosition.X)
+            if (first.X < second.X)
             {
-                pos.X = Math.Floor(_startDrawPosition.X);
-                size.Width = Math.Ceiling(secondPosition.X - pos.X);
+                pos.X = Math.Floor(first.X);
+                size.Width = Math.Ceiling(second.X - pos.X);
             }
             else
             {
-                pos.X = Math.Floor(secondPosition.X);
-                size.Width = Math.Abs(Math.Ceiling(_startDrawPosition.X - pos.X));
+                pos.X = Math.Floor(second.X);
+                size.Width = Math.Abs(Math.Ceiling(first.X - pos.X));
             }
 
-            if (_startDrawPosition.Y < secondPosition.Y)
+            if (first.Y < second.Y)
             {
-                pos.Y = Math.Floor(_startDrawPosition.Y);
-                size.Height = Math.Ceiling(secondPosition.Y - pos.Y);
+                pos.Y = Math.Floor(first.Y);
+                size.Height = Math.Ceiling(second.Y - pos.Y);
             }
             else
             {
-                pos.Y = Math.Floor(secondPosition.Y);
-                size.Height = Math.Abs(Math.Ceiling(_startDrawPosition.Y - pos.Y));
+                pos.Y = Math.Floor(second.Y);
+                size.Height = Math.Abs(Math.Ceiling(first.Y - pos.Y));
             }
 
             Position = pos;
@@ -52,7 +56,7 @@ namespace BuildingMap.UI.Components
         public bool EndDraw()
         {
             _drawing = false;
-            return Size.Width > 0 && Size.Height > 0;
+            return !Size.IsZeroSize();
         }
     }
 }

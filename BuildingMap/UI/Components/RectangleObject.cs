@@ -1,6 +1,5 @@
 ﻿using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Shapes;
 
@@ -8,6 +7,8 @@ namespace BuildingMap.UI.Components
 {
     public partial class RectangleObject : Grid, IBuildingGridItem
     {
+        private const int AuraSize = 4;
+
         private BuildingGrid _grid;
 
         private readonly Rectangle _rectangle;
@@ -23,8 +24,11 @@ namespace BuildingMap.UI.Components
             HorizontalAlignment = HorizontalAlignment.Left;
             VerticalAlignment = VerticalAlignment.Top;
 
+            Background = new SolidColorBrush(Color.FromArgb(0, 0, 0, 0));
+
             Children.Add(_rectangle = new Rectangle());
             _rectangle.Fill = UnselectedColor;
+            _rectangle.Margin = new Thickness(AuraSize);
 
             RenderTransform = _translateTransform = new TranslateTransform();
 
@@ -37,11 +41,6 @@ namespace BuildingMap.UI.Components
             _grid = Parent as BuildingGrid;
 
             base.OnVisualParentChanged(oldParent);
-        }
-
-        protected override void OnMouseDown(MouseButtonEventArgs e)
-        {
-            base.OnMouseDown(e);
         }
 
         public void Update()
@@ -73,18 +72,18 @@ namespace BuildingMap.UI.Components
         private void UpdatePosition()
         {
             var position = (_position.ToVector() + (_grid.Offset / 2).FloorInt() * 2) * _grid.GridSize;
-            position = (position / _grid.GridSize).Floor() * _grid.GridSize;
+            position = (position / _grid.GridSize - new Vector(0.001, 0.001)).Round() * _grid.GridSize;
 
-            _translateTransform.X = position.X;
-            _translateTransform.Y = position.Y;
+            _translateTransform.X = position.X - AuraSize;
+            _translateTransform.Y = position.Y - AuraSize;
         }
 
         private void UpdateSize()
         {
-            var size = _size.ToVector().Ceiling() * _grid.GridSize;
+            var size = (_size.ToVector() + new Vector(0.001, 0.001)).Round() * _grid.GridSize;
 
-            _rectangle.Width = Width = size.X;
-            _rectangle.Height = Height = size.Y;
+            Width = (_rectangle.Width = size.X) + AuraSize * 2;
+            Height = (_rectangle.Height = size.Y) + AuraSize * 2;
         }
     }
 }

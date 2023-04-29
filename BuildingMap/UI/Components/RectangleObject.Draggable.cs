@@ -1,4 +1,5 @@
-﻿using System.Diagnostics;
+﻿using System;
+using System.Diagnostics;
 using System.Windows;
 using System.Windows.Input;
 
@@ -9,6 +10,9 @@ namespace BuildingMap.UI.Components
         private static readonly DragContext DragContext = new DragContext();
 
         private ResizeDirection? _resizing;
+        private Vector _resizeFirst;
+        private Vector _resizeSecond;
+
         private Cursor _defaultCursor;
 
         public DragContext StartDrag()
@@ -18,7 +22,10 @@ namespace BuildingMap.UI.Components
                 _resizing = direction;
 
                 _defaultCursor = Mouse.OverrideCursor;
-                Mouse.OverrideCursor = DirectionToCursor(direction) ?? _defaultCursor;
+                Mouse.OverrideCursor = direction.ToCursor() ?? _defaultCursor;
+
+                _resizeFirst = Position.ToVector();
+                _resizeSecond = _resizeFirst + Size.ToVector();
             }
 
             return DragContext;
@@ -26,13 +33,19 @@ namespace BuildingMap.UI.Components
 
         public void StopDrag()
         {
-            Position = Position.Floor();
-            Size = Size.ToVector().Ceiling().ToSize();
-            
+            Position = Position.Round();
+
             if (_resizing != null)
             {
+                Size = Size.Round();
+
                 _resizing = null;
                 Mouse.OverrideCursor = _defaultCursor;
+
+                if (Size.IsZeroSize())
+                {
+                    _grid.Children.Remove(this);
+                }
             }
         }
 
@@ -52,31 +65,60 @@ namespace BuildingMap.UI.Components
         {
             var shift = offset / (_grid.GridSize * _grid.Zoom);
 
-            Vector directionVector;
+            Trace.TraceInformation($"{_resizeFirst}   {_resizeSecond}   {shift}");
+
             if (_resizing == ResizeDirection.West || _resizing == ResizeDirection.NorthWest || _resizing == ResizeDirection.SouthWest)
             {
-                directionVector.X = -1;
+                _resizeFirst.X += shift.X;
             } 
             else if (_resizing == ResizeDirection.East || _resizing == ResizeDirection.NorthEast || _resizing == ResizeDirection.SouthEast)
             {
-                directionVector.X = 1;
+                _resizeSecond.X += shift.X;
             }
 
             if (_resizing == ResizeDirection.North || _resizing == ResizeDirection.NorthWest || _resizing == ResizeDirection.NorthEast)
             {
-                directionVector.Y = -1;
+                _resizeFirst.Y += shift.Y;
             }
             else if (_resizing == ResizeDirection.South || _resizing == ResizeDirection.SouthWest || _resizing == ResizeDirection.SouthEast)
             {
-                directionVector.Y = 1;
+                _resizeSecond.Y += shift.Y;
             }
 
-            directionVector = new Vector(directionVector.X * shift.X, directionVector.Y * shift.Y);
+            UpdateShape(_resizeFirst, _resizeSecond);
 
-            Position -= directionVector;
-            Size = (Size.ToVector() + directionVector).ToSize();
+            Trace.TraceInformation($"{_resizeFirst} {_resizeSecond}");
+        }
 
-            Trace.TraceInformation($"{Position}  {Size}");
+        private void UpdateShape(Vector first, Vector second)
+        {
+            Point pos;
+            Size size;
+
+            if (first.X < second.X)
+            {
+                pos.X = first.X;
+                size.Width = second.X - pos.X;
+            }
+            else
+            {
+                pos.X = second.X;
+                size.Width = Math.Abs(first.X - pos.X);
+            }
+
+            if (first.Y < second.Y)
+            {
+                pos.Y = first.Y;
+                size.Height = second.Y - pos.Y;
+            }
+            else
+            {
+                pos.Y = second.Y;
+                size.Height = Math.Abs(first.Y - pos.Y);
+            }
+
+            Position = pos;
+            Size = size;
         }
 
         private void Move(Vector offset)
@@ -92,7 +134,7 @@ namespace BuildingMap.UI.Components
             {
                 if (IsMouseNearCorner(out var direction))
                 {
-                    Cursor = DirectionToCursor(direction);
+                    Cursor = direction.ToCursor();
                 }
                 else if (Cursor == Cursors.SizeWE
                     || Cursor == Cursors.SizeNWSE
@@ -107,24 +149,26 @@ namespace BuildingMap.UI.Components
         private bool IsMouseNearCorner(out ResizeDirection direction)
         {
             var near = 0.05;
-            var cornerNear = near * 3;
+            var cornerNear = near * 2;
+            var minNearFakeSize = 10;
+
             var mousePosition = _grid.MousePosition;
             var positionVector = Position.ToVector();
 
             var firstDiff = (positionVector - mousePosition).Abs();
-            firstDiff = new Vector(firstDiff.X / Size.Width, firstDiff.Y / Size.Height);
+            firstDiff = new Vector(firstDiff.X / Math.Max(Size.Width, minNearFakeSize), firstDiff.Y / Math.Max(Size.Height, minNearFakeSize));
 
             var secondDiff = (positionVector + Size.ToVector() - mousePosition).Abs();
-            secondDiff = new Vector(secondDiff.X / Size.Width, secondDiff.Y / Size.Height);
+            secondDiff = new Vector(secondDiff.X / Math.Max(Size.Width, minNearFakeSize), secondDiff.Y / Math.Max(Size.Height, minNearFakeSize));
 
-            //if (firstDiff.X > near
-            //    && secondDiff.X > near
-            //    && firstDiff.Y > near
-            //    && secondDiff.Y > near)
-            //{
-            //    direction = ResizeDirection.None;
-            //    return false;
-            //}
+            if (firstDiff.X > near
+                && secondDiff.X > near
+                && firstDiff.Y > near
+                && secondDiff.Y > near)
+            {
+                direction = ResizeDirection.None;
+                return false;
+            }
 
             if (firstDiff.X < cornerNear && firstDiff.Y < cornerNear)
             {
@@ -169,34 +213,6 @@ namespace BuildingMap.UI.Components
 
             direction = ResizeDirection.None;
             return false;
-        }
-
-        private Cursor DirectionToCursor(ResizeDirection direction)
-        {
-            return direction switch
-            {
-                ResizeDirection.West or ResizeDirection.East => Cursors.SizeWE,
-                ResizeDirection.NorthWest or ResizeDirection.SouthEast => Cursors.SizeNWSE,
-                ResizeDirection.North or ResizeDirection.South => Cursors.SizeNS,
-                ResizeDirection.NorthEast or ResizeDirection.SouthWest => Cursors.SizeNESW,
-
-                _ => null
-            };
-        }
-
-        private enum ResizeDirection
-        {
-            None,
-
-            West,
-            East,
-            South,
-            North,
-            
-            NorthWest,
-            NorthEast,
-            SouthWest,
-            SouthEast
         }
     }
 }
