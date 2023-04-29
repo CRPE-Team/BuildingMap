@@ -35,14 +35,44 @@ namespace BuildingMap.UI
             return vector;
         }
 
-        public static Vector Floor(this Vector vector)
+        public static Vector FloorInt(this Vector vector)
         {
             return new Vector((int)vector.X, (int)vector.Y);
         }
 
-        public static Vector Floor(this Point vector)
+        public static Vector Floor(this Vector vector)
         {
             return new Vector(Math.Floor(vector.X), Math.Floor(vector.Y));
+        }
+
+        public static Vector Ceiling(this Vector vector)
+        {
+            return new Vector(Math.Ceiling(vector.X), Math.Ceiling(vector.Y));
+        }
+
+        public static Vector Round(this Vector vector)
+        {
+            return new Vector(Math.Round(vector.X), Math.Round(vector.Y));
+        }
+
+        public static Vector Abs(this Vector vector)
+        {
+            return new Vector(Math.Abs(vector.X), Math.Abs(vector.Y));
+        }
+
+        public static Vector Fix(this Vector vector, int fixAverage)
+        {
+            return (vector * fixAverage).FloorInt() / fixAverage;
+        }
+
+        public static Point Floor(this Point vector)
+        {
+            return new Point(Math.Floor(vector.X), Math.Floor(vector.Y));
+        }
+
+        public static Point Round(this Point vector)
+        {
+            return new Point(Math.Round(vector.X), Math.Round(vector.Y));
         }
 
         public static Point ToPoint(this Vector vector)
@@ -53,6 +83,16 @@ namespace BuildingMap.UI
         public static Vector ToVector(this Point vector)
         {
             return new Vector(vector.X, vector.Y);
+        }
+
+        public static Vector ToVector(this Size vector)
+        {
+            return new Vector(vector.Width, vector.Height);
+        }
+
+        public static Size ToSize(this Vector vector)
+        {
+            return new Size(vector.X, vector.Y);
         }
     }
 }

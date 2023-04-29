@@ -9,8 +9,9 @@
         Title="MainWindow" Height="450" Width="800">
     <Grid>
         <components:MainFieldGrid>
-            <components:BuildingGrid ShowGrid="True" GridSize="50">
+            <components:BuildingGrid ShowGrid="True" GridSize="5">
                 <components:VertexView Position="0, 0" />
+                <components:RectangleObject Position="1, 1" Size="1, 2" />
             </components:BuildingGrid>
         </components:MainFieldGrid>
 

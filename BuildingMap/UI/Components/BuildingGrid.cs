@@ -27,6 +27,8 @@ namespace BuildingMap.UI.Components
 
         private Brush _gridBrush;
 
+        private IDrawable _drawable;
+
         public bool ShowGrid { get => _showGrid; set => SetShowGrid(value); }
 
         public int GridSize { get => _gridSize; set => SetGridSize(value); }
@@ -118,24 +120,41 @@ namespace BuildingMap.UI.Components
 
         public DragContext StartDrag()
         {
-            return Mouse.RightButton == MouseButtonState.Pressed ? DragContext : null;
+            if (Mouse.LeftButton == MouseButtonState.Pressed)
+            {
+                _drawable = new RectangleObject();
+                Children.Add(_drawable as UIElement);
+
+                _drawable.StartDraw();
+            }
+
+            return DragContext;
         }
 
         public void StopDrag()
         {
-
+            if (!_drawable?.EndDraw() ?? false)
+            {
+                Children.Remove(_drawable as UIElement);
+                _drawable = null;
+            }
         }
 
         public void Drag(Point position, Vector offset)
         {
-            Shift(offset);
+            if (Mouse.RightButton == MouseButtonState.Pressed)
+            {
+                Shift(offset);
+            }
+            else if (Mouse.LeftButton == MouseButtonState.Pressed)
+            {
+                _drawable?.Draw();
+            }
         }
 
         protected override void OnMouseDown(MouseButtonEventArgs e)
         {
             Focus();
-
-            Trace.TraceInformation($"{MousePosition}");
         }
 
         protected override void OnKeyDown(KeyEventArgs e)
@@ -150,19 +169,19 @@ namespace BuildingMap.UI.Components
             }
             else if (e.Key == Key.Right)
             {
-                Shift(new Vector(1, 0));
+                Shift(new Vector(5, 0));
             }
             else if (e.Key == Key.Left)
             {
-                Shift(new Vector(-1, 0));
+                Shift(new Vector(-5, 0));
             }
             else if (e.Key == Key.Up)
             {
-                Shift(new Vector(0, -1));
+                Shift(new Vector(0, -5));
             }
             else if (e.Key == Key.Down)
             {
-                Shift(new Vector(0, 1));
+                Shift(new Vector(0, 5));
             }
         }
 
@@ -188,18 +207,14 @@ namespace BuildingMap.UI.Components
             _offset += offset / gridSize;
 
             UpdateShift();
-            Move();
+            UpdateChildren();
         }
 
-        private void Move()
+        private void UpdateChildren()
         {
-            foreach (var child in Children.OfType<VertexView>())
+            foreach (var child in Children.OfType<IBuildingGridItem>())
             {
-                //var pos = (child.Position.ToVector() + (_offset / 2).Floor() * 2) * _gridSize;
-
-                //child.Position = pos.ToPoint();
-
-                child.Position = child.Position;
+                child.Update();
             }
         }
 

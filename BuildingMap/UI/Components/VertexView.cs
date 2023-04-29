@@ -7,8 +7,8 @@ using System.Windows.Shapes;
 
 namespace BuildingMap.UI.Components
 {
-	public class VertexView : Grid, IDraggable
-	{
+	public class VertexView : Grid, IBuildingGridItem, IDraggable
+    {
 		private static readonly int Size = 25;
 		private static readonly Brush UnselectedColor = new SolidColorBrush(Color.FromRgb(0x00, 0xD3, 0xEA));
 		private static readonly Brush SelectedColor = Brushes.White;
@@ -55,6 +55,8 @@ namespace BuildingMap.UI.Components
         protected override void OnVisualParentChanged(DependencyObject oldParent)
         {
             _grid = Parent as BuildingGrid;
+
+            base.OnVisualParentChanged(oldParent);
         }
 
         public int Id { get; } = _idCounter++;
@@ -90,19 +92,29 @@ namespace BuildingMap.UI.Components
 			}
 		}
 
+		public void Update()
+		{
+			UpdatePosition();
+        }
+
 		public Point Position 
 		{ 
 			get => _position; 
 			set
 			{
 				_position = value;
-
-                var position = (_position.ToVector() + (_grid.Offset / 2).Floor() * 2) * _grid.GridSize;
-
-                _translateTransform.X = Math.Round(position.X / _grid.GridSize) * _grid.GridSize - Size / 2;
-				_translateTransform.Y = Math.Round(position.Y / _grid.GridSize) * _grid.GridSize - Size / 2;
-			}
+				UpdatePosition();
+            }
 		}
+
+		private void UpdatePosition()
+		{
+            var position = (_position.ToVector() + (_grid.Offset / 2).FloorInt() * 2) * _grid.GridSize;
+			position = (position / _grid.GridSize).Round() * _grid.GridSize;
+
+            _translateTransform.X = position.X - Size / 2;
+            _translateTransform.Y = position.Y - Size / 2;
+        }
 
 		public bool ShowNumber
 		{
@@ -129,7 +141,7 @@ namespace BuildingMap.UI.Components
 
         public void StopDrag()
         {
-            
+            Position = Position.Round();
         }
 
         public void Drag(Point position, Vector offset)
