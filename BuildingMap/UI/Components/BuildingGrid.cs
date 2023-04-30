@@ -30,7 +30,7 @@ namespace BuildingMap.UI.Components
 
         public bool AllowEdit { get => _allowEdit; set => SetAllowEdit(value); }
 
-        public double Zoom { get => _scaleTransform.ScaleX; set => _scaleTransform.ScaleX = _scaleTransform.ScaleY = value; }
+        public double Zoom { get => _scaleTransform.ScaleX; set => _scaleTransform.ScaleX = _scaleTransform.ScaleY = Math.Max(0.4, Math.Min(10, value)); }
 
         public Vector RenderOffset => _offset;
 
@@ -206,7 +206,7 @@ namespace BuildingMap.UI.Components
         {
             var mouseFromCenterPos = Mouse.GetPosition(this).ToVector() / Grid.GridSize + _shift - _offsetCenterFix;
 
-            Zoom = Math.Max(0.4, Math.Min(10, Zoom * scaleChange));
+            Zoom *= scaleChange;
 
             UpdateShift();
 

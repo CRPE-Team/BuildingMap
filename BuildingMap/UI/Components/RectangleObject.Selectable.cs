@@ -19,7 +19,7 @@ namespace BuildingMap.UI.Components
             _rectangle.StrokeThickness = 3;
 
             Application.Current.MainWindow.KeyDown += OnKeyDown;
-            Application.Current.MainWindow.MouseDown += OnMouseDown;
+            Application.Current.MainWindow.MouseUp += OnMouseUp;
         }
 
         public void Unselect()
@@ -31,7 +31,7 @@ namespace BuildingMap.UI.Components
             _rectangle.Fill = UnselectedBrush;
 
             Application.Current.MainWindow.KeyDown -= OnKeyDown;
-            Application.Current.MainWindow.MouseDown -= OnMouseDown;
+            Application.Current.MainWindow.MouseUp -= OnMouseUp;
         }
 
         private void OnKeyDown(object source, KeyEventArgs e)
@@ -50,12 +50,12 @@ namespace BuildingMap.UI.Components
             }
         }
 
-        protected override void OnMouseDown(MouseButtonEventArgs e)
+        protected override void OnMouseUp(MouseButtonEventArgs e)
         {
-            if (ISelectable.SelectedObject != this) Select();
+            if (ISelectable.SelectedObject != this && !DragManager.Moving) Select();
         }
 
-        private void OnMouseDown(object source, MouseButtonEventArgs e)
+        private void OnMouseUp(object source, MouseButtonEventArgs e)
         {
             if (!IsMouseOver && ISelectable.SelectedObject == this)
             {

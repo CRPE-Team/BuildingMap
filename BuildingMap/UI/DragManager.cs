@@ -7,11 +7,11 @@ namespace BuildingMap.UI
     {
         private DragContext _dragContext;
         private static bool _dragging;
-        private bool _moving;
+        private static bool _moving;
         private Point _mouseStartPosition;
 
         public static bool Dragging => _dragging;
-        public bool Moving => _moving;
+        public static bool Moving => _moving;
 
         public UIElement Source { get; }
         public static IDraggable SelectedElement { get; private set; }
