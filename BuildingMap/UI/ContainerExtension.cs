@@ -7,13 +7,10 @@ namespace BuildingMap.UI
     public class ContainerExtension : UnityContainerExtension
     {
         protected override void Initialize()
-        {
-            RegisterViews();
-        }
+		{
+			Container.RegisterType<MainWindow>();
 
-        private void RegisterViews()
-        {
-            Container.RegisterType<MainWindow>();
-        }
+			Container.AddNewExtension<Pages.ContainerExtension>();
+		}
     }
 }

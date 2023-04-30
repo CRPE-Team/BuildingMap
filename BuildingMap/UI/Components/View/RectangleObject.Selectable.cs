@@ -1,8 +1,9 @@
 ﻿using System.Windows;
 using System.Windows.Input;
 using System.Windows.Media;
+using BuildingMap.UI.Components.View.Core.Utils;
 
-namespace BuildingMap.UI.Components
+namespace BuildingMap.UI.Components.View
 {
     public partial class RectangleObject : ISelectable
     {

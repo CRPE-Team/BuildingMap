@@ -1,6 +1,6 @@
 ﻿using System.Windows;
 
-namespace BuildingMap.UI
+namespace BuildingMap.UI.Components.View.Core.Utils
 {
     public interface IDraggable
     {

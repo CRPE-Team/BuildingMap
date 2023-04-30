@@ -4,7 +4,7 @@ using System.Windows;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 
-namespace BuildingMap.UI.Components
+namespace BuildingMap.UI.Components.View
 {
     public class ImageBackground : BuildingGridItem
     {

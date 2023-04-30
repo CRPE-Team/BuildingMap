@@ -1,8 +1,9 @@
 ﻿using System.Windows;
 using System.Windows.Media;
 using System.Windows.Shapes;
+using BuildingMap.UI.Components.View.Core.Utils;
 
-namespace BuildingMap.UI.Components
+namespace BuildingMap.UI.Components.View
 {
     public partial class RectangleObject : BuildingGridItem
     {

@@ -1,4 +1,4 @@
-﻿namespace BuildingMap.UI
+﻿namespace BuildingMap.UI.Components.View.Core.Utils
 {
     public class DragContext
     {

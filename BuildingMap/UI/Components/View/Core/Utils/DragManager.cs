@@ -1,7 +1,7 @@
 ﻿using System.Windows;
 using System.Windows.Input;
 
-namespace BuildingMap.UI
+namespace BuildingMap.UI.Components.View.Core.Utils
 {
     public class DragManager
     {
@@ -43,7 +43,7 @@ namespace BuildingMap.UI
             if (_dragging) return false;
 
             _dragging = true;
-            _mouseStartPosition = Mouse.GetPosition(Source);        
+            _mouseStartPosition = Mouse.GetPosition(Source);
 
             SelectedElement = element;
             _dragContext = element.StartDrag();

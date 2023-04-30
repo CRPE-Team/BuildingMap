@@ -2,8 +2,9 @@
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
+using BuildingMap.UI.Components.View.Core.Utils;
 
-namespace BuildingMap.UI.Components
+namespace BuildingMap.UI.Components.View
 {
     public class BuildingGridItem : Grid, IBuildingGridItem, ICopyable
     {

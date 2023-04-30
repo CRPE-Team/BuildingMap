@@ -1,4 +1,4 @@
-﻿namespace BuildingMap.UI.Components
+﻿namespace BuildingMap.UI.Components.View
 {
     public interface IBuildingGridItem
     {

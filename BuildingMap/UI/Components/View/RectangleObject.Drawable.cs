@@ -1,7 +1,8 @@
 ﻿using System;
 using System.Windows;
+using BuildingMap.UI.Components.View.Core.Utils;
 
-namespace BuildingMap.UI.Components
+namespace BuildingMap.UI.Components.View
 {
     public partial class RectangleObject : IDrawable
     {

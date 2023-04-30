@@ -1,7 +1,8 @@
-﻿using System.Windows.Controls;
+﻿using BuildingMap.UI.Components.View.Core.Utils;
+using System.Windows.Controls;
 using System.Windows.Input;
 
-namespace BuildingMap.UI.Components
+namespace BuildingMap.UI.Components.View.Core
 {
     public class DragGrid : Grid
     {
@@ -17,10 +18,10 @@ namespace BuildingMap.UI.Components
         protected virtual void OnStartDrag(object sender, MouseButtonEventArgs e)
         {
             var directlyOver = DragManager.MouseDirectlyOver();
-            if (directlyOver != null) 
+            if (directlyOver != null)
             {
                 DragManager.StartDrag(directlyOver);
-            }          
+            }
         }
     }
 }
