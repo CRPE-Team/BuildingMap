@@ -8,15 +8,18 @@ namespace BuildingMap.UI.Components
     {
         private static readonly Brush SelectedBrush = new SolidColorBrush(Color.FromRgb(0x00, 0xDF, 0xE0));
 
+        public bool CanSelect { get; set; } = true;
+
         public void Select()
         {
-            ISelectable.Select(this);
+            if (!ISelectable.Select(this)) return;
 
             _rectangle.Stroke = UnselectedBrush;
             _rectangle.Fill = SelectedBrush;
             _rectangle.StrokeThickness = 3;
 
             Application.Current.MainWindow.KeyDown += OnKeyDown;
+            Application.Current.MainWindow.MouseDown += OnMouseDown;
         }
 
         public void Unselect()
@@ -28,9 +31,10 @@ namespace BuildingMap.UI.Components
             _rectangle.Fill = UnselectedBrush;
 
             Application.Current.MainWindow.KeyDown -= OnKeyDown;
-        }   
+            Application.Current.MainWindow.MouseDown -= OnMouseDown;
+        }
 
-        protected virtual void OnKeyDown(object source, KeyEventArgs e)
+        private void OnKeyDown(object source, KeyEventArgs e)
         {
             if (e.Key == Key.Escape)
             {
@@ -48,9 +52,15 @@ namespace BuildingMap.UI.Components
 
         protected override void OnMouseDown(MouseButtonEventArgs e)
         {
-            base.OnMouseDown(e);
+            if (ISelectable.SelectedObject != this) Select();
+        }
 
-            Select();
+        private void OnMouseDown(object source, MouseButtonEventArgs e)
+        {
+            if (!IsMouseOver && ISelectable.SelectedObject == this)
+            {
+                Unselect();
+            }
         }
     }
 }

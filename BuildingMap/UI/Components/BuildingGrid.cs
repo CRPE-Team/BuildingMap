@@ -180,6 +180,11 @@ namespace BuildingMap.UI.Components
             {
                 var copy = ICopyable.GetCopy() as UIElement;
                 if (copy != null) Children.Add(copy);
+                if (copy is BuildingGridItem buildingGridItem)
+                {
+                    buildingGridItem.Position = MousePosition.ToPoint();
+                    buildingGridItem.Update();
+                }
             }
         }
 
