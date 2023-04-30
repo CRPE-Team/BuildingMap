@@ -1,34 +1,23 @@
-﻿using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Hosting;
-using System.Windows;
+﻿using System.Windows;
 using Unity;
-using Unity.Microsoft.DependencyInjection;
 
 namespace BuildingMap
 {
-    /// <summary>
-    /// Interaction logic for App.xaml
-    /// </summary>
-    public partial class App : Application
+	/// <summary>
+	/// Interaction logic for App.xaml
+	/// </summary>
+	public partial class App : Application
     {
-        public static IHost AppHost { get; private set; }
-
         public static IUnityContainer Container { get; private set; }
 
         public App()
         {
-            AppHost = Host.CreateDefaultBuilder()
-                .UseUnityServiceProvider(SetupContainer())
-                .Build();
-        }
+			SetupContainer();
+		}
 
-        protected override async void OnStartup(StartupEventArgs e)
+        protected override void OnStartup(StartupEventArgs e)
         {
-            await AppHost?.StartAsync();
-
-            AppHost.Services.GetRequiredService<UI.View.MainWindow>().Show();
-
-            base.OnStartup(e);
+			Container.Resolve<UI.View.MainWindow>().Show();
         }
 
         private IUnityContainer SetupContainer()
