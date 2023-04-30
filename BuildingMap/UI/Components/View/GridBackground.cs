@@ -4,32 +4,40 @@ using System.Windows.Controls;
 using System.Windows.Interop;
 using System.Windows.Media.Imaging;
 using System.Windows.Media;
+using BuildingMap.UI.Utils;
 
 namespace BuildingMap.UI.Components.View
 {
     public class GridBackground : Grid
-    {
-        private bool _showGrid = false;
-        private int _gridSize;
+	{
+		public static readonly DependencyProperty ShowGridProperty = DependencyPropertyEx.Register<bool, GridBackground>(ShowGridChanged);
+		public static readonly DependencyProperty GridSizeProperty = DependencyPropertyEx.Register<int, GridBackground>(GridSizeChanged, 1);
 
         private Brush _gridBrush;
 
-        public bool ShowGrid { get => _showGrid; set => SetShowGrid(value); }
+        public bool ShowGrid { get => (bool)GetValue(ShowGridProperty); set => SetValue(ShowGridProperty, value); }
 
-        public int GridSize { get => _gridSize; set => SetGridSize(value); }
+        public int GridSize { get => (int) GetValue(GridSizeProperty); set => SetValue(GridSizeProperty, value); }
 
         public GridBackground()
         {
-            SetGridSize(50);
+
         }
 
-        private void SetGridSize(int gridSize)
+		private static void GridSizeChanged(GridBackground d, DependencyPropertyChangedEventArgs e)
+		{
+			d.UpdateGridSize((int) e.NewValue);
+		}
+
+		private static void ShowGridChanged(GridBackground d, DependencyPropertyChangedEventArgs e)
+		{
+			d.UpdateShowGrid((bool) e.NewValue);
+		}
+
+		private void UpdateGridSize(int gridSize)
         {
-            _gridSize = gridSize;
-
             var scaleCoefficient = 5;
-            var size = Math.Max(1, GridSize) * scaleCoefficient;
-
+            var size = Math.Max(1, gridSize) * scaleCoefficient;
 
             var bitmap = new System.Drawing.Bitmap(size * 2, size * 2);
             bitmap.MakeTransparent();
@@ -54,14 +62,12 @@ namespace BuildingMap.UI.Components.View
             brush.Viewport = new Rect(0, 0, bitmap.Width / scaleCoefficient, bitmap.Height / scaleCoefficient);
 
             _gridBrush = brush;
-            SetShowGrid(_showGrid);
+            UpdateShowGrid(ShowGrid);
         }
 
-        private void SetShowGrid(bool showGrid)
+        private void UpdateShowGrid(bool showGrid)
         {
-            _showGrid = showGrid;
-
-            if (ShowGrid)
+            if (showGrid)
             {
                 Background = _gridBrush;
             }

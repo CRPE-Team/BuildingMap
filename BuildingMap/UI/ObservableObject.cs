@@ -7,15 +7,15 @@ namespace BuildingMap.UI
 	{
 		public event PropertyChangedEventHandler PropertyChanged;
 
-		public void OnPropertyChanged([CallerMemberName] string prop = "")
+		public void OnPropertyChanged([CallerMemberName] string propertyName = "")
 		{
-			PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(prop));
+			PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
 		}
 
-		public void OnPropertyChanged<T>(ref T obj, T value, [CallerMemberName] string prop = "")
+		public void OnPropertyChanged<T>(ref T obj, T value, [CallerMemberName] string propertyName = "")
 		{
 			obj = value;
-			PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(prop));
+			PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
 		}
 	}
 }

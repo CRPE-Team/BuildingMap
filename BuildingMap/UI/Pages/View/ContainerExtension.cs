@@ -7,7 +7,7 @@ namespace BuildingMap.UI.Pages.View
 	{
 		protected override void Initialize()
 		{
-			Container.RegisterType<MapPageView>();
+			Container.RegisterType<MapPageView>(TypeLifetime.Transient);
 		}
 	}
 }

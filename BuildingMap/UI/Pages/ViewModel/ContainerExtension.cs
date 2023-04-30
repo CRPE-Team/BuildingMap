@@ -7,7 +7,8 @@ namespace BuildingMap.UI.Pages.ViewModel
 	{
 		protected override void Initialize()
 		{
-			Container.RegisterType<MapPageViewModel>();
+			Container.RegisterType<MapPageViewModel>(TypeLifetime.Transient);
+			Container.RegisterType<MapEditModeViewModel>(TypeLifetime.Transient);
 		}
 	}
 }

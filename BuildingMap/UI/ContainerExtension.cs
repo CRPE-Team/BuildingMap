@@ -8,7 +8,7 @@ namespace BuildingMap.UI
     {
         protected override void Initialize()
 		{
-			Container.RegisterType<MainWindow>();
+			Container.RegisterType<MainWindow>(TypeLifetime.Transient);
 
 			Container.AddNewExtension<Pages.ContainerExtension>();
 		}

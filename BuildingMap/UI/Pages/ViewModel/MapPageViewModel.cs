@@ -3,21 +3,23 @@
 namespace BuildingMap.UI.Pages.ViewModel
 {
 	public class MapPageViewModel : ObservableObject
-    {
-		private bool _allowEditMode = false;
-		private Vector _offset = new Vector(10, 10);
+	{
+		private int _gridSize = 5;
+		private Vector _offset;
 
-		public MapPageViewModel()
+		public MapPageViewModel(MapEditModeViewModel editMode)
 		{
-
+			EditMode = editMode;
 		}
 
-		public bool AllowEdit
+		public MapEditModeViewModel EditMode { get; set; }
+
+		public int GridSize
 		{
-			get => _allowEditMode;
+			get => _gridSize;
 			set
 			{
-				_allowEditMode = value;
+				_gridSize = value;
 				OnPropertyChanged();
 			}
 		}

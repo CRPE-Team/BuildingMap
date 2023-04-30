@@ -13,9 +13,9 @@
 
     <Grid>
         <components.core:DragGrid>
-			<components:BuildingGrid AllowEdit="{Binding AllowEdit, Mode=TwoWay}" Offset="{Binding Offset, Mode=TwoWay}">
+			<components:BuildingGrid AllowEdit="{Binding EditMode.AllowEdit, Mode=TwoWay}" Offset="{Binding Offset, Mode=TwoWay}">
                 <components:BuildingGrid.Grid>
-                    <components:GridBackground ShowGrid="True" GridSize="5"/>
+					<components:GridBackground ShowGrid="{Binding EditMode.AllowEdit}" GridSize="{Binding GridSize}"/>
                 </components:BuildingGrid.Grid>
 
                 <components:BuildingGrid.BackgroundImage>

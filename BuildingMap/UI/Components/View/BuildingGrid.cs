@@ -5,13 +5,14 @@ using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media;
 using BuildingMap.UI.Components.View.Core.Utils;
+using BuildingMap.UI.Utils;
 
 namespace BuildingMap.UI.Components.View
 {
     public partial class BuildingGrid : Grid, IDraggable
     {
-		public static readonly DependencyProperty AllowEditProperty = DependencyProperty.Register("AllowEdit", typeof(bool), typeof(BuildingGrid));
-		public static readonly DependencyProperty OffsetProperty = DependencyProperty.Register("Offset", typeof(Vector), typeof(BuildingGrid), new FrameworkPropertyMetadata() { PropertyChangedCallback = new PropertyChangedCallback(OnOffsetChanged) });
+		public static readonly DependencyProperty AllowEditProperty = DependencyPropertyEx.Register<bool, BuildingGrid>();
+		public static readonly DependencyProperty OffsetProperty = DependencyPropertyEx.Register<Vector, BuildingGrid>(OnOffsetChanged);
 
 		private static readonly DragContext DragContext = new DragContext();
         private const int GridReserve = 2000;
@@ -37,9 +38,11 @@ namespace BuildingMap.UI.Components.View
 
 		public Vector Offset  { get => (Vector) GetValue(OffsetProperty); set => SetValue(OffsetProperty, value); }
 
-		public Vector MousePosition => Mouse.GetPosition(this).ToVector() / Grid.GridSize + _shift - RenderOffset;
+		public Vector MousePosition => Mouse.GetPosition(this).ToVector() / GridSize + _shift - RenderOffset;
 
-        public double RenderGridSize => Grid.GridSize * Zoom;
+        public double RenderGridSize => GridSize * Zoom;
+
+		public int GridSize => Grid?.GridSize ?? 1;
 
 		public GridBackground Grid
         {
@@ -74,20 +77,24 @@ namespace BuildingMap.UI.Components.View
 
             transformGroup.Children.Add(_scaleTransform = new ScaleTransform());
             transformGroup.Children.Add(_translateTransform = new TranslateTransform());
+		}
 
-            Grid = new GridBackground();
-
-            //debug
-            Application.Current.MainWindow.KeyDown += OnKeyDown;
-        }
-		private static void OnOffsetChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+		//debug
+		protected override void OnVisualParentChanged(DependencyObject oldParent)
 		{
-			((BuildingGrid) d).Shift();
+			if (oldParent is Grid grid) grid.KeyDown -= OnKeyDown;
+			base.OnVisualParentChanged(oldParent);
+			((Grid)Parent).KeyDown += OnKeyDown;
+		}
+
+		private static void OnOffsetChanged(BuildingGrid d, DependencyPropertyChangedEventArgs e)
+		{
+			d.Shift();
 		}
 
 		protected override void OnRenderSizeChanged(SizeChangedInfo sizeInfo)
         {
-			_offsetCenterFix = new Vector(sizeInfo.NewSize.Width, sizeInfo.NewSize.Height) / Grid.GridSize / 2;
+			_offsetCenterFix = new Vector(sizeInfo.NewSize.Width, sizeInfo.NewSize.Height) / GridSize / 2;
             Shift();
 
             base.OnRenderSizeChanged(sizeInfo);
@@ -125,7 +132,7 @@ namespace BuildingMap.UI.Components.View
                 && Mouse.RightButton == MouseButtonState.Pressed
                 && Keyboard.Modifiers.HasFlag(ModifierKeys.Shift))
             {
-                _imageBackground.Move(offset);
+                _imageBackground?.Move(offset);
             }
             else if (Mouse.RightButton == MouseButtonState.Pressed || !AllowEdit)
             {
@@ -188,7 +195,7 @@ namespace BuildingMap.UI.Components.View
         {
             var scaleChange = 1 + e.Delta / 1700d;
 
-            if (AllowEdit && Keyboard.Modifiers.HasFlag(ModifierKeys.Shift))
+			if (_imageBackground != null && AllowEdit && Keyboard.Modifiers.HasFlag(ModifierKeys.Shift))
             {
                 _imageBackground.Scale *= scaleChange;
                 _imageBackground.Update();
@@ -200,13 +207,13 @@ namespace BuildingMap.UI.Components.View
 
         private void UpdateScale(double scaleChange)
         {
-            var mouseFromCenterPos = Mouse.GetPosition(this).ToVector() / Grid.GridSize + _shift - _offsetCenterFix;
+            var mouseFromCenterPos = Mouse.GetPosition(this).ToVector() / GridSize + _shift - _offsetCenterFix;
 
             Zoom *= scaleChange;
 
             UpdateShift();
 
-            var newMouseFromCenterPos = Mouse.GetPosition(this).ToVector() / Grid.GridSize + _shift - _offsetCenterFix;
+            var newMouseFromCenterPos = Mouse.GetPosition(this).ToVector() / GridSize + _shift - _offsetCenterFix;
 			RenderOffset -= mouseFromCenterPos - newMouseFromCenterPos;
 
             Shift();
