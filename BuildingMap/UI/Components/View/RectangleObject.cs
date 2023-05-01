@@ -54,14 +54,14 @@ namespace BuildingMap.UI.Components.View
             return copy;
         }
 
-        protected override void UpdatePosition(Vector position)
+        protected override void UpdateOffset(Vector position)
         {
-            base.UpdatePosition(position - new Vector(AuraSize, AuraSize));
+            base.UpdateOffset(position - new Vector(AuraSize, AuraSize));
         }
 
         private void UpdateSize()
         {
-            var size = (_size.ToVector() + new Vector(0.001, 0.001)).Round() * Grid.Grid.GridSize;
+            var size = (_size.ToVector() + new Vector(0.001, 0.001)).Round() * Grid.GridSize;
 
             Width = (_rectangle.Width = size.X) + AuraSize * 2;
             Height = (_rectangle.Height = size.Y) + AuraSize * 2;

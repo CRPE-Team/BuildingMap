@@ -6,25 +6,38 @@
       xmlns:components.core="clr-namespace:BuildingMap.UI.Components.View.Core"
       xmlns:components="clr-namespace:BuildingMap.UI.Components.View"
       xmlns:viewModel="clr-namespace:BuildingMap.UI.Pages.ViewModel"
+      xmlns:utils="clr-namespace:BuildingMap.UI.Utils"
       mc:Ignorable="d"
       d:DataContext="{d:DesignInstance viewModel:MapPageViewModel}"
       d:DesignHeight="450" d:DesignWidth="800"
       Title="MapPage">
 
-    <Grid>
+	<Page.Resources>
+		<utils:BooleanOrLogicalConverter x:Key="booleanOrLogicalConverter"/>
+	</Page.Resources>
+	
+	<Grid>
         <components.core:DragGrid>
-			<components:BuildingGrid AllowEdit="{Binding EditMode.AllowEdit, Mode=TwoWay}" Offset="{Binding Offset, Mode=TwoWay}">
+			<components:BuildingGrid AllowEdit="{Binding MapEditModeViewModel.AllowEdit, Mode=TwoWay}" Offset="{Binding Offset}" Zoom="{Binding Zoom}">
                 <components:BuildingGrid.Grid>
-					<components:GridBackground ShowGrid="{Binding EditMode.AllowEdit}" GridSize="{Binding GridSize}"/>
+					<components:BackgroundGrid BackgroundColor="{Binding Background}" Show="{Binding MapEditModeViewModel.AllowEdit}" GridSize="{Binding GridSize}"/>
                 </components:BuildingGrid.Grid>
 
                 <components:BuildingGrid.BackgroundImage>
-                    <components:ImageBackground Scale="0.2" ImageSourcePath="C:\Users\Lashov\source\repos\BuildingMap\BuildingMap\UI\Pages\Izuku-Midoriya-Изуку-Мидория-Моя-Геройская-Академия-арты-картинки-12.jpg"/>
-                </components:BuildingGrid.BackgroundImage>
+					<components:BackgroundImage DataContext="{Binding MapEditModeViewModel}"
+												Position="{Binding BackgroundImageViewModel.Position}"
+												Scale="{Binding BackgroundImageViewModel.Scale}" 
+												ImageSourcePath="{Binding BackgroundImageViewModel.Path}">
+						<components:BackgroundImage.Show>
+							<MultiBinding Converter="{StaticResource booleanOrLogicalConverter}">
+								<Binding Path="AllowEdit"/>
+								<Binding Path="BackgroundImageViewModel.Show"/>
+							</MultiBinding>
+						</components:BackgroundImage.Show>
+					</components:BackgroundImage>
+				</components:BuildingGrid.BackgroundImage>
 
-                <components:VertexView Position="0, 0" />
-                <components:RectangleObject Position="1, 1" Size="1, 2" />
-            </components:BuildingGrid>
+			</components:BuildingGrid>
         </components.core:DragGrid>
     </Grid>
 </Page>

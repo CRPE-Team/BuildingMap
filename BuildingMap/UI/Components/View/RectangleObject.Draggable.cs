@@ -16,7 +16,7 @@ namespace BuildingMap.UI.Components.View
 
         private Cursor _defaultCursor;
 
-        public bool CanDrag => (Grid?.AllowEdit ?? false) && Mouse.LeftButton == MouseButtonState.Pressed;
+        public bool CanDrag => Grid.AllowEdit && Mouse.LeftButton == MouseButtonState.Pressed;
 
         public DragContext StartDrag()
         {

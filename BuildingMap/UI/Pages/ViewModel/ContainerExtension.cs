@@ -9,6 +9,7 @@ namespace BuildingMap.UI.Pages.ViewModel
 		{
 			Container.RegisterType<MapPageViewModel>(TypeLifetime.Transient);
 			Container.RegisterType<MapEditModeViewModel>(TypeLifetime.Transient);
+			Container.RegisterType<BackgroundImageViewModel>(TypeLifetime.Transient);
 		}
 	}
 }

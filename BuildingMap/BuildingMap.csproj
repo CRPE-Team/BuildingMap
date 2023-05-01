@@ -23,9 +23,4 @@
     </Page>
   </ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="UI\Components\View\Map\" />
-    <Folder Include="UI\Components\ViewModel\" />
-  </ItemGroup>
-
 </Project>

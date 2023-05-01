@@ -2,20 +2,22 @@
 {
 	public class MapEditModeViewModel : ObservableObject
 	{
-		private bool _allowEditMode = true;
+		private bool _allowEdit = true;
 
-		public MapEditModeViewModel()
+		public MapEditModeViewModel(BackgroundImageViewModel backgroundImageViewModel)
 		{
-
+			BackgroundImageViewModel = backgroundImageViewModel;
 		}
+
+		public BackgroundImageViewModel BackgroundImageViewModel { get; }
 
 		public bool AllowEdit
 		{
-			get => _allowEditMode;
+			get => _allowEdit;
 			set
 			{
-				_allowEditMode = value;
-				OnPropertyChanged(ref _allowEditMode, value);
+				_allowEdit = value;
+				OnPropertyChanged();
 			}
 		}
 	}

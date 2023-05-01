@@ -8,30 +8,46 @@ using BuildingMap.UI.Utils;
 
 namespace BuildingMap.UI.Components.View
 {
-    public class GridBackground : Grid
+    public class BackgroundGrid : Grid
 	{
-		public static readonly DependencyProperty ShowGridProperty = DependencyPropertyEx.Register<bool, GridBackground>(ShowGridChanged);
-		public static readonly DependencyProperty GridSizeProperty = DependencyPropertyEx.Register<int, GridBackground>(GridSizeChanged, 1);
+		public static readonly DependencyProperty ShowProperty = DependencyPropertyEx.Register<bool, BackgroundGrid>(OnShowChanged);
+		public static readonly DependencyProperty GridSizeProperty = DependencyPropertyEx.Register<int, BackgroundGrid>(OnGridSizeChanged, GridSizeCoerce, 5);
+		public static readonly DependencyProperty BackgroundColorProperty = DependencyPropertyEx.Register<Color, BackgroundGrid>(OnBackgroundColorChanged, Color.FromArgb(0, 0, 0, 0));
 
-        private Brush _gridBrush;
+		private Brush _gridBrush;
 
-        public bool ShowGrid { get => (bool)GetValue(ShowGridProperty); set => SetValue(ShowGridProperty, value); }
+        public bool Show { get => (bool)GetValue(ShowProperty); set => SetValue(ShowProperty, value); }
 
-        public int GridSize { get => (int) GetValue(GridSizeProperty); set => SetValue(GridSizeProperty, value); }
+        public int GridSize { get => (int)GetValue(GridSizeProperty); set => SetValue(GridSizeProperty, value); }
 
-        public GridBackground()
+		public Color BackgroundColor { get => (Color) GetValue(BackgroundColorProperty); set => SetValue(BackgroundColorProperty, value); }
+
+		public BackgroundGrid()
         {
-
+			UpdateGridSize(GridSize);
         }
 
-		private static void GridSizeChanged(GridBackground d, DependencyPropertyChangedEventArgs e)
+		private static void OnShowChanged(BackgroundGrid d, DependencyPropertyChangedEventArgs e)
+		{
+			d.UpdateShowGrid((bool) e.NewValue);
+		}
+
+		private static object GridSizeCoerce(BackgroundGrid d, int gridSize)
+		{
+			return Math.Max(1, gridSize);
+		}
+
+		private static void OnGridSizeChanged(BackgroundGrid d, DependencyPropertyChangedEventArgs e)
 		{
 			d.UpdateGridSize((int) e.NewValue);
 		}
 
-		private static void ShowGridChanged(GridBackground d, DependencyPropertyChangedEventArgs e)
+		private static void OnBackgroundColorChanged(BackgroundGrid d, DependencyPropertyChangedEventArgs e)
 		{
-			d.UpdateShowGrid((bool) e.NewValue);
+			if (!d.Show)
+			{
+				d.Background = new SolidColorBrush((Color) e.NewValue);
+			}
 		}
 
 		private void UpdateGridSize(int gridSize)
@@ -62,7 +78,7 @@ namespace BuildingMap.UI.Components.View
             brush.Viewport = new Rect(0, 0, bitmap.Width / scaleCoefficient, bitmap.Height / scaleCoefficient);
 
             _gridBrush = brush;
-            UpdateShowGrid(ShowGrid);
+            UpdateShowGrid(Show);
         }
 
         private void UpdateShowGrid(bool showGrid)
@@ -73,7 +89,7 @@ namespace BuildingMap.UI.Components.View
             }
             else
             {
-                Background = new SolidColorBrush(Color.FromArgb(0, 0, 0, 0));
+                Background = new SolidColorBrush(BackgroundColor);
             }
         }
     }

@@ -12,7 +12,8 @@ namespace BuildingMap.UI.Components.View
     public partial class BuildingGrid : Grid, IDraggable
     {
 		public static readonly DependencyProperty AllowEditProperty = DependencyPropertyEx.Register<bool, BuildingGrid>();
-		public static readonly DependencyProperty OffsetProperty = DependencyPropertyEx.Register<Vector, BuildingGrid>(OnOffsetChanged);
+		public static readonly DependencyProperty OffsetProperty = DependencyPropertyEx.Register<Vector, BuildingGrid>(OnOffsetChanged, FrameworkPropertyMetadataOptions.BindsTwoWayByDefault);
+		public static readonly DependencyProperty ZoomProperty = DependencyPropertyEx.Register<double, BuildingGrid>(OnZoomChanged, ZoomCoerce, FrameworkPropertyMetadataOptions.BindsTwoWayByDefault, 1);
 
 		private static readonly DragContext DragContext = new DragContext();
         private const int GridReserve = 2000;
@@ -23,8 +24,8 @@ namespace BuildingMap.UI.Components.View
         private readonly ScaleTransform _scaleTransform;
         private readonly TranslateTransform _translateTransform;
 
-        private GridBackground _gridBackground;
-        private ImageBackground _imageBackground;
+        private BackgroundGrid _gridBackground;
+        private BackgroundImage _imageBackground;
 
         private IDrawable _drawable;
 
@@ -32,7 +33,7 @@ namespace BuildingMap.UI.Components.View
 
 		public bool AllowEdit { get => (bool) GetValue(AllowEditProperty); set => SetValue(AllowEditProperty, value); }
 
-		public double Zoom { get => _scaleTransform.ScaleX; set => _scaleTransform.ScaleX = _scaleTransform.ScaleY = Math.Max(0.4, Math.Min(10, value)); }
+		public double Zoom { get => (double) GetValue(ZoomProperty); set => SetValue(ZoomProperty, value); }
 
 		public Vector RenderOffset { get => Offset + _offsetCenterFix; set => Offset = value - _offsetCenterFix; }
 
@@ -44,7 +45,7 @@ namespace BuildingMap.UI.Components.View
 
 		public int GridSize => Grid?.GridSize ?? 1;
 
-		public GridBackground Grid
+		public BackgroundGrid Grid
         {
             get => _gridBackground;
             set
@@ -55,7 +56,7 @@ namespace BuildingMap.UI.Components.View
             }
         }
 
-        public ImageBackground BackgroundImage
+        public BackgroundImage BackgroundImage
         {
             get => _imageBackground;
             set
@@ -77,19 +78,24 @@ namespace BuildingMap.UI.Components.View
 
             transformGroup.Children.Add(_scaleTransform = new ScaleTransform());
             transformGroup.Children.Add(_translateTransform = new TranslateTransform());
-		}
 
-		//debug
-		protected override void OnVisualParentChanged(DependencyObject oldParent)
-		{
-			if (oldParent is Grid grid) grid.KeyDown -= OnKeyDown;
-			base.OnVisualParentChanged(oldParent);
-			((Grid)Parent).KeyDown += OnKeyDown;
+			//debug
+			if (Application.Current?.MainWindow != null) Application.Current.MainWindow.KeyDown += OnKeyDown;
 		}
 
 		private static void OnOffsetChanged(BuildingGrid d, DependencyPropertyChangedEventArgs e)
 		{
 			d.Shift();
+		}
+
+		private static object ZoomCoerce(BuildingGrid d, double scale)
+		{
+			return Math.Max(0.2, Math.Min(10, scale));
+		}
+
+		private static void OnZoomChanged(BuildingGrid d, DependencyPropertyChangedEventArgs e)
+		{
+			d._scaleTransform.ScaleX = d._scaleTransform.ScaleY = (double) e.NewValue;
 		}
 
 		protected override void OnRenderSizeChanged(SizeChangedInfo sizeInfo)
@@ -157,7 +163,7 @@ namespace BuildingMap.UI.Components.View
             }
             else if (e.Key == Key.G)
             {
-                Grid.ShowGrid = !Grid.ShowGrid;
+                Grid.Show = !Grid.Show;
             }
             else if (e.Key == Key.E)
             {
@@ -198,7 +204,6 @@ namespace BuildingMap.UI.Components.View
 			if (_imageBackground != null && AllowEdit && Keyboard.Modifiers.HasFlag(ModifierKeys.Shift))
             {
                 _imageBackground.Scale *= scaleChange;
-                _imageBackground.Update();
                 return;
             }
 

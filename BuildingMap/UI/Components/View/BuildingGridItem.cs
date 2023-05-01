@@ -3,12 +3,15 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
 using BuildingMap.UI.Components.View.Core.Utils;
+using BuildingMap.UI.Utils;
 
 namespace BuildingMap.UI.Components.View
 {
     public class BuildingGridItem : Grid, IBuildingGridItem, ICopyable
-    {
-        private Point _position;
+	{
+		public static readonly DependencyProperty PositionProperty = DependencyPropertyEx.Register<Point, BuildingGridItem>(OnPositionChanged, FrameworkPropertyMetadataOptions.BindsTwoWayByDefault);
+
+		private Point _position;
 
         private BuildingGrid _grid;
 
@@ -18,14 +21,21 @@ namespace BuildingMap.UI.Components.View
         protected BuildingGrid Grid => _grid;
         protected TransformGroup TransformGroup => _transformGroup;
 
-        public BuildingGridItem()
+		public Point Position { get => (Point) GetValue(PositionProperty); set => SetValue(PositionProperty, value); }
+
+		public BuildingGridItem()
         {
             RenderTransform = _transformGroup = new TransformGroup();
 
             _transformGroup.Children.Add(_translateTransform = new TranslateTransform());
-        }
+		}
 
-        protected override void OnVisualParentChanged(DependencyObject oldParent)
+		private static void OnPositionChanged(BuildingGridItem d, DependencyPropertyChangedEventArgs e)
+		{
+			d.UpdatePosition((Point) e.NewValue);
+		}
+
+		protected override void OnVisualParentChanged(DependencyObject oldParent)
         {
             _grid = Parent as BuildingGrid;
 
@@ -34,26 +44,16 @@ namespace BuildingMap.UI.Components.View
 
         public virtual void Update()
         {
-            UpdatePosition();
+            UpdatePosition(Position);
         }
 
-        public Point Position
+        private void UpdatePosition(Point position)
         {
-            get => _position;
-            set
-            {
-                _position = value;
-                UpdatePosition();
-            }
+            var offset = (position.ToVector() + (_grid.RenderOffset / 2).FloorInt() * 2) * _grid.GridSize;
+            UpdateOffset((offset / _grid.GridSize).Round() * _grid.GridSize);
         }
 
-        private void UpdatePosition()
-        {
-            var position = (_position.ToVector() + (_grid.RenderOffset / 2).FloorInt() * 2) * _grid.Grid.GridSize;
-            UpdatePosition((position / _grid.Grid.GridSize).Round() * _grid.Grid.GridSize);
-        }
-
-        protected virtual void UpdatePosition(Vector position)
+        protected virtual void UpdateOffset(Vector position)
         {
             _translateTransform.X = position.X;
             _translateTransform.Y = position.Y;

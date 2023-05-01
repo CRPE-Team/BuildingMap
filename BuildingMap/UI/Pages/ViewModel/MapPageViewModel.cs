@@ -1,4 +1,5 @@
 ﻿using System.Windows;
+using System.Windows.Media;
 
 namespace BuildingMap.UI.Pages.ViewModel
 {
@@ -6,13 +7,15 @@ namespace BuildingMap.UI.Pages.ViewModel
 	{
 		private int _gridSize = 5;
 		private Vector _offset;
+		private Color _background;
+		private double _zoom;
 
-		public MapPageViewModel(MapEditModeViewModel editMode)
+		public MapPageViewModel(MapEditModeViewModel editModeViewModel)
 		{
-			EditMode = editMode;
+			MapEditModeViewModel = editModeViewModel;
 		}
 
-		public MapEditModeViewModel EditMode { get; set; }
+		public MapEditModeViewModel MapEditModeViewModel { get; }
 
 		public int GridSize
 		{
@@ -30,6 +33,26 @@ namespace BuildingMap.UI.Pages.ViewModel
 			set
 			{
 				_offset = value;
+				OnPropertyChanged();
+			}
+		}
+
+		public Color Background
+		{
+			get => _background;
+			set
+			{
+				_background = value;
+				OnPropertyChanged();
+			}
+		}
+
+		public double Zoom
+		{
+			get => _zoom;
+			set
+			{
+				_zoom = value;
 				OnPropertyChanged();
 			}
 		}
