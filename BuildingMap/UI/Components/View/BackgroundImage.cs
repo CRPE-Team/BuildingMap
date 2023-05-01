@@ -2,6 +2,7 @@
 using System.ComponentModel;
 using System.IO;
 using System.Windows;
+using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using BuildingMap.UI.Utils;
@@ -27,7 +28,7 @@ namespace BuildingMap.UI.Components.View
 		[Bindable(true)]
 		public double Scale { get => (double) GetValue(ScaleProperty); set => SetValue(ScaleProperty, value); }
 
-        public bool CanDrag => Grid.AllowEdit;
+        public bool CanDrag => Mouse.LeftButton == MouseButtonState.Pressed && Grid.AllowEdit;
 
 		public BackgroundImage()
         {

@@ -1,4 +1,6 @@
-﻿using System.Windows;
+﻿using System.Collections.ObjectModel;
+using System.Threading.Tasks;
+using System.Windows;
 using System.Windows.Media;
 
 namespace BuildingMap.UI.Pages.ViewModel
@@ -16,6 +18,8 @@ namespace BuildingMap.UI.Pages.ViewModel
 		}
 
 		public MapEditModeViewModel MapEditModeViewModel { get; }
+
+		public ObservableCollection<MapItemViewModel> Items { get; } = new ObservableCollection<MapItemViewModel>();
 
 		public int GridSize
 		{

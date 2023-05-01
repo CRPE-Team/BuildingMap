@@ -2,15 +2,15 @@
 using System.ComponentModel;
 using System.Linq;
 using System.Windows;
-using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media;
+using BuildingMap.UI.Components.View.Core;
 using BuildingMap.UI.Components.View.Core.Utils;
 using BuildingMap.UI.Utils;
 
 namespace BuildingMap.UI.Components.View
 {
-	public partial class BuildingGrid : Grid, IDraggable
+	public partial class BuildingGrid : ObservableGrid, IDraggable
     {
 		public static readonly DependencyProperty AllowEditProperty = DependencyPropertyEx.Register<bool, BuildingGrid>();
 		public static readonly DependencyProperty OffsetProperty = DependencyPropertyEx.Register<Vector, BuildingGrid>(OnOffsetChanged, FrameworkPropertyMetadataOptions.BindsTwoWayByDefault);
@@ -28,9 +28,9 @@ namespace BuildingMap.UI.Components.View
         private BackgroundGrid _gridBackground;
         private BackgroundImage _imageBackground;
 
-        private IDrawable _drawable;
+		private IDrawable _drawable;
 
-        public bool CanDrag => true;
+        public bool CanDrag => Mouse.LeftButton == MouseButtonState.Pressed || Mouse.RightButton == MouseButtonState.Pressed;
 
 		[Bindable(true)]
 		public bool AllowEdit { get => (bool) GetValue(AllowEditProperty); set => SetValue(AllowEditProperty, value); }
@@ -69,7 +69,7 @@ namespace BuildingMap.UI.Components.View
                 Children.Add(_imageBackground = value);
                 SetZIndex(_imageBackground, -10);
             }
-        }
+		}
 
 		public BuildingGrid()
         {
@@ -229,8 +229,8 @@ namespace BuildingMap.UI.Components.View
             foreach (var child in Children.OfType<IBuildingGridItem>())
             {
                 child.Update();
-            }
-        }
+			}
+		}
 
         private void UpdateShift()
         {

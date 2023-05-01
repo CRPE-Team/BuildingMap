@@ -10,8 +10,6 @@ namespace BuildingMap.UI.Components.View
 	{
 		public static readonly DependencyProperty PositionProperty = DependencyPropertyEx.Register<Point, BuildingGridItem>(OnPositionChanged, FrameworkPropertyMetadataOptions.BindsTwoWayByDefault);
 
-		private Point _position;
-
         private BuildingGrid _grid;
 
         private readonly TransformGroup _transformGroup;
@@ -42,13 +40,20 @@ namespace BuildingMap.UI.Components.View
             base.OnVisualParentChanged(oldParent);
         }
 
-        public virtual void Update()
+		protected override void OnPropertyChanged(DependencyPropertyChangedEventArgs e)
+		{
+			base.OnPropertyChanged(e);
+		}
+
+		public virtual void Update()
         {
             UpdatePosition(Position);
         }
 
         private void UpdatePosition(Point position)
         {
+			if (_grid == null) return;
+
             var offset = (position.ToVector() + (_grid.RenderOffset / 2).FloorInt() * 2) * _grid.GridSize;
             UpdateOffset((offset / _grid.GridSize).Round() * _grid.GridSize);
         }

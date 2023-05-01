@@ -56,6 +56,8 @@ namespace BuildingMap.UI.Components.View
 
 		private void UpdateSize(Size size)
         {
+			if (Grid == null) return;
+
             var sizeVector = (size.ToVector() + new Vector(0.001, 0.001)).Round() * Grid.GridSize;
 
             Width = (_rectangle.Width = sizeVector.X) + AuraSize * 2;

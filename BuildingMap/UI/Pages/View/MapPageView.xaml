@@ -18,12 +18,12 @@
 	
 	<Grid>
         <components.core:DragGrid>
-			<components:BuildingGrid AllowEdit="{Binding MapEditModeViewModel.AllowEdit, Mode=TwoWay}" Offset="{Binding Offset}" Zoom="{Binding Zoom}">
-                <components:BuildingGrid.Grid>
+			<components:BuildingGrid ItemsSource="{Binding Items}" AllowEdit="{Binding MapEditModeViewModel.AllowEdit, Mode=TwoWay}" Offset="{Binding Offset}" Zoom="{Binding Zoom}">
+				<components:BuildingGrid.Grid>
 					<components:BackgroundGrid BackgroundColor="{Binding Background}" Show="{Binding MapEditModeViewModel.AllowEdit}" GridSize="{Binding GridSize}"/>
                 </components:BuildingGrid.Grid>
 
-                <components:BuildingGrid.BackgroundImage>
+				<components:BuildingGrid.BackgroundImage>
 					<components:BackgroundImage DataContext="{Binding MapEditModeViewModel}"
 												Position="{Binding BackgroundImageViewModel.Position}"
 												Scale="{Binding BackgroundImageViewModel.Scale}" 
@@ -37,6 +37,11 @@
 					</components:BackgroundImage>
 				</components:BuildingGrid.BackgroundImage>
 
+				<components:BuildingGrid.ItemTemplate>
+					<DataTemplate>
+						<components:RectangleObject Position="{Binding Position}" Size="{Binding Size}" />
+					</DataTemplate>
+				</components:BuildingGrid.ItemTemplate>
 			</components:BuildingGrid>
         </components.core:DragGrid>
     </Grid>
