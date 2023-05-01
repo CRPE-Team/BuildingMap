@@ -16,9 +16,9 @@ namespace BuildingMap.UI.Components.View
 
 		private Brush _gridBrush;
 
-        public bool Show { get => (bool)GetValue(ShowProperty); set => SetValue(ShowProperty, value); }
+        public bool Show { get => (bool) GetValue(ShowProperty); set => SetValue(ShowProperty, value); }
 
-        public int GridSize { get => (int)GetValue(GridSizeProperty); set => SetValue(GridSizeProperty, value); }
+        public int GridSize { get => (int) GetValue(GridSizeProperty); set => SetValue(GridSizeProperty, value); }
 
 		public Color BackgroundColor { get => (Color) GetValue(BackgroundColorProperty); set => SetValue(BackgroundColorProperty, value); }
 

@@ -6,7 +6,7 @@ namespace BuildingMap.UI.Pages.ViewModel
 	{
 		private string _path = @"C:\Users\Lashov\source\repos\BuildingMap\BuildingMap\UI\Pages\Izuku-Midoriya-Изуку-Мидория-Моя-Геройская-Академия-арты-картинки-12.jpg";
 		private Point _position;
-		private double _scale = 0.2;
+		private double _scale = 0.4;
 		private bool _show;
 
 		public BackgroundImageViewModel()

@@ -12,7 +12,7 @@ namespace BuildingMap.UI.Components.View
 		public static readonly DependencyProperty ShowProperty = DependencyPropertyEx.Register<bool, BackgroundImage>(OnShowChanged);
 		public static readonly DependencyProperty ImageSourcePathProperty = DependencyPropertyEx.Register<string, BackgroundImage>(OnImageSourcePathChanged);
 		public static readonly DependencyProperty ScaleProperty = DependencyPropertyEx.Register<double, BackgroundImage>(OnScaleChanged, ScaleCoerce, FrameworkPropertyMetadataOptions.BindsTwoWayByDefault);
-
+		
 		private ImageBrush _image;
 
         private readonly ScaleTransform _scaleTransform;
@@ -34,12 +34,23 @@ namespace BuildingMap.UI.Components.View
 			RenderTransformOrigin = new Point(0.5, 0.5);
 
 			Show = false;
-			Scale = 0.2;
+			Scale = 0.4;
+
+			Width = Height = 1000;
+			Margin = new Thickness(-1000);
+
+			HorizontalAlignment = HorizontalAlignment.Center;
+			VerticalAlignment = VerticalAlignment.Center;
 		}
 
 		public void Move(Vector offset)
 		{
 			Position += offset / Grid.RenderGridSize;
+		}
+
+		public override void Update()
+		{
+			base.Update();
 		}
 
 		protected override void UpdateOffset(Vector _)
@@ -60,7 +71,7 @@ namespace BuildingMap.UI.Components.View
 
 		private static object ScaleCoerce(BackgroundImage d, double scale)
 		{
-			return Math.Max(0.01, Math.Min(3, scale));
+			return Math.Max(0.1, Math.Min(5, scale));
 		}
 
 		private static void OnScaleChanged(BackgroundImage d, DependencyPropertyChangedEventArgs e)

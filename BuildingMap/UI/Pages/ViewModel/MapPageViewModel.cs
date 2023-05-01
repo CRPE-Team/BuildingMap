@@ -8,7 +8,7 @@ namespace BuildingMap.UI.Pages.ViewModel
 		private int _gridSize = 5;
 		private Vector _offset;
 		private Color _background;
-		private double _zoom;
+		private double _zoom = 1;
 
 		public MapPageViewModel(MapEditModeViewModel editModeViewModel)
 		{
