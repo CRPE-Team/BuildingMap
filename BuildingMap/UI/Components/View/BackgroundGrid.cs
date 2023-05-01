@@ -5,6 +5,7 @@ using System.Windows.Interop;
 using System.Windows.Media.Imaging;
 using System.Windows.Media;
 using BuildingMap.UI.Utils;
+using System.ComponentModel;
 
 namespace BuildingMap.UI.Components.View
 {
@@ -16,10 +17,13 @@ namespace BuildingMap.UI.Components.View
 
 		private Brush _gridBrush;
 
-        public bool Show { get => (bool) GetValue(ShowProperty); set => SetValue(ShowProperty, value); }
+		[Bindable(true)]
+		public bool Show { get => (bool) GetValue(ShowProperty); set => SetValue(ShowProperty, value); }
 
-        public int GridSize { get => (int) GetValue(GridSizeProperty); set => SetValue(GridSizeProperty, value); }
+		[Bindable(true)]
+		public int GridSize { get => (int) GetValue(GridSizeProperty); set => SetValue(GridSizeProperty, value); }
 
+		[Bindable(true)]
 		public Color BackgroundColor { get => (Color) GetValue(BackgroundColorProperty); set => SetValue(BackgroundColorProperty, value); }
 
 		public BackgroundGrid()

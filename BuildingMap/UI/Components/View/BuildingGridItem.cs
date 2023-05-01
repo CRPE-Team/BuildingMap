@@ -1,13 +1,12 @@
-﻿using System;
+﻿using System.ComponentModel;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
-using BuildingMap.UI.Components.View.Core.Utils;
 using BuildingMap.UI.Utils;
 
 namespace BuildingMap.UI.Components.View
 {
-    public class BuildingGridItem : Grid, IBuildingGridItem, ICopyable
+	public class BuildingGridItem : Grid, IBuildingGridItem
 	{
 		public static readonly DependencyProperty PositionProperty = DependencyPropertyEx.Register<Point, BuildingGridItem>(OnPositionChanged, FrameworkPropertyMetadataOptions.BindsTwoWayByDefault);
 
@@ -21,6 +20,7 @@ namespace BuildingMap.UI.Components.View
         protected BuildingGrid Grid => _grid;
         protected TransformGroup TransformGroup => _transformGroup;
 
+		[Bindable(true)]
 		public Point Position { get => (Point) GetValue(PositionProperty); set => SetValue(PositionProperty, value); }
 
 		public BuildingGridItem()
@@ -57,14 +57,6 @@ namespace BuildingMap.UI.Components.View
         {
             _translateTransform.X = position.X;
             _translateTransform.Y = position.Y;
-        }
-
-        public virtual ICopyable CreateCopy()
-        {
-            var copy = (BuildingGridItem)Activator.CreateInstance(GetType());
-            copy._position = _position;
-
-            return copy;
         }
     }
 }

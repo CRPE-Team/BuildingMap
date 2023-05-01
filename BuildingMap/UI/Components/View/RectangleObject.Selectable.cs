@@ -45,10 +45,6 @@ namespace BuildingMap.UI.Components.View
             {
                 Grid.Children.Remove(this);
             }
-            else if (e.Key == Key.C && Keyboard.Modifiers.HasFlag(ModifierKeys.Control))
-            {
-                ICopyable.CopyToCache(this);
-            }
         }
 
         protected override void OnMouseUp(MouseButtonEventArgs e)

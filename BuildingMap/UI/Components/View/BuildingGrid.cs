@@ -1,4 +1,5 @@
 ﻿using System;
+using System.ComponentModel;
 using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
@@ -31,12 +32,15 @@ namespace BuildingMap.UI.Components.View
 
         public bool CanDrag => true;
 
+		[Bindable(true)]
 		public bool AllowEdit { get => (bool) GetValue(AllowEditProperty); set => SetValue(AllowEditProperty, value); }
 
+		[Bindable(true)]
 		public double Zoom { get => (double) GetValue(ZoomProperty); set => SetValue(ZoomProperty, value); }
 
 		public Vector RenderOffset { get => Offset + _offsetCenterFix; set => Offset = value - _offsetCenterFix; }
 
+		[Bindable(true)]
 		public Vector Offset  { get => (Vector) GetValue(OffsetProperty); set => SetValue(OffsetProperty, value); }
 
 		public Vector MousePosition => Mouse.GetPosition(this).ToVector() / GridSize + _shift - RenderOffset;
@@ -69,7 +73,7 @@ namespace BuildingMap.UI.Components.View
 
 		public BuildingGrid()
         {
-			_originMagrin = Margin = new Thickness(-GridReserve);
+			Margin = new Thickness(-GridReserve);
 
             RenderTransformOrigin = new Point(0.5, 0.5);
 
@@ -196,16 +200,6 @@ namespace BuildingMap.UI.Components.View
             else if (e.Key == Key.Down)
             {
                 Shift(new Vector(0, 5));
-            }
-            else if (e.Key == Key.V && Keyboard.Modifiers.HasFlag(ModifierKeys.Control))
-            {
-                var copy = ICopyable.GetCopy() as UIElement;
-                if (copy != null) Children.Add(copy);
-                if (copy is BuildingGridItem buildingGridItem)
-                {
-                    buildingGridItem.Position = MousePosition.ToPoint();
-                    buildingGridItem.Update();
-                }
             }
         }
 

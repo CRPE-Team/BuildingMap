@@ -5,6 +5,7 @@ namespace BuildingMap.UI.Utils
 {
 	public delegate void PropertyChangedCallback<T>(T d, DependencyPropertyChangedEventArgs e) where T : DependencyObject;
 	public delegate object CoerceValueCallback<T, TValue>(T d, TValue e) where T : DependencyObject;
+    public delegate bool ValidateValueCallback<TValue>(TValue value);
 
 	public static class DependencyPropertyEx
 	{
@@ -83,7 +84,7 @@ namespace BuildingMap.UI.Utils
 
 		public static DependencyProperty Register<TProperty, TOwner>(
 			PropertyChangedCallback<TOwner> propertyChangedCallback,
-			ValidateValueCallback validateValueCallback,
+			ValidateValueCallback<TProperty> validateValueCallback,
 			TProperty defaultValue = default,
 			[CallerMemberName] string name = "") where TOwner : DependencyObject
 		{
@@ -94,7 +95,7 @@ namespace BuildingMap.UI.Utils
 				{
 					PropertyChangedCallback = new PropertyChangedCallback((d, args) => propertyChangedCallback((TOwner) d, args))
 				},
-				validateValueCallback);
+				new ValidateValueCallback(value => validateValueCallback((TProperty) value)));
 		}
 
 		private static string ResolvePropertyName(string name)

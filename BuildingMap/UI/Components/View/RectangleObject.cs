@@ -1,21 +1,28 @@
-﻿using System.Windows;
+﻿using System;
+using System.ComponentModel;
+using System.Windows;
+using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Shapes;
 using BuildingMap.UI.Components.View.Core.Utils;
+using BuildingMap.UI.Utils;
 
 namespace BuildingMap.UI.Components.View
 {
     public partial class RectangleObject : BuildingGridItem
-    {
-        private static readonly Brush UnselectedBrush = new SolidColorBrush(Color.FromRgb(0x00, 0xD3, 0xEA));
+	{
+		public static readonly DependencyProperty SizeProperty = DependencyPropertyEx.Register<Size, RectangleObject>(OnSizeChanged);
+
+		private static readonly Brush UnselectedBrush = new SolidColorBrush(Color.FromRgb(0x00, 0xD3, 0xEA));
 
         private const int AuraSize = 4;
 
         private readonly Rectangle _rectangle;
 
-        private Size _size;
+		[Bindable(true)]
+		public Size Size { get => (Size) GetValue(SizeProperty); set => SetValue(SizeProperty, value); }
 
-        public RectangleObject()
+		public RectangleObject()
         {
             HorizontalAlignment = HorizontalAlignment.Left;
             VerticalAlignment = VerticalAlignment.Top;
@@ -34,24 +41,7 @@ namespace BuildingMap.UI.Components.View
         public override void Update()
         {
             base.Update();
-            UpdateSize();
-        }
-
-        public Size Size
-        {
-            get => _size;
-            set
-            {
-                _size = value;
-                UpdateSize();
-            }
-        }
-
-        public override ICopyable CreateCopy()
-        {
-            var copy = (RectangleObject)base.CreateCopy();
-            copy._size = _size;
-            return copy;
+            UpdateSize(Size);
         }
 
         protected override void UpdateOffset(Vector position)
@@ -59,12 +49,17 @@ namespace BuildingMap.UI.Components.View
             base.UpdateOffset(position - new Vector(AuraSize, AuraSize));
         }
 
-        private void UpdateSize()
-        {
-            var size = (_size.ToVector() + new Vector(0.001, 0.001)).Round() * Grid.GridSize;
+		private static void OnSizeChanged(RectangleObject d, DependencyPropertyChangedEventArgs e)
+		{
+			d.UpdateSize((Size) e.NewValue);
+		}
 
-            Width = (_rectangle.Width = size.X) + AuraSize * 2;
-            Height = (_rectangle.Height = size.Y) + AuraSize * 2;
+		private void UpdateSize(Size size)
+        {
+            var sizeVector = (size.ToVector() + new Vector(0.001, 0.001)).Round() * Grid.GridSize;
+
+            Width = (_rectangle.Width = sizeVector.X) + AuraSize * 2;
+            Height = (_rectangle.Height = sizeVector.Y) + AuraSize * 2;
         }
     }
 }

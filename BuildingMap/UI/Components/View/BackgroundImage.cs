@@ -1,4 +1,5 @@
 ﻿using System;
+using System.ComponentModel;
 using System.IO;
 using System.Windows;
 using System.Windows.Media;
@@ -17,11 +18,14 @@ namespace BuildingMap.UI.Components.View
 
         private readonly ScaleTransform _scaleTransform;
 
+		[Bindable(true)]
 		public bool Show { get => (bool) GetValue(ShowProperty); set => SetValue(ShowProperty, value); }
 
+		[Bindable(true)]
 		public string ImageSourcePath { get => (string) GetValue(ImageSourcePathProperty); set => SetValue(ImageSourcePathProperty, value); }
 
-        public double Scale { get => (double) GetValue(ScaleProperty); set => SetValue(ScaleProperty, value); }
+		[Bindable(true)]
+		public double Scale { get => (double) GetValue(ScaleProperty); set => SetValue(ScaleProperty, value); }
 
         public bool CanDrag => Grid.AllowEdit;
 
