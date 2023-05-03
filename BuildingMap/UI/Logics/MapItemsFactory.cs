@@ -13,5 +13,10 @@ namespace BuildingMap.UI.Logics
 				SelectedColor = Color.FromRgb(0x00, 0xF3, 0xEA),
 			};
 		}
+
+		public MapItemViewModel TryCreateCopyFromClipboard()
+		{
+			return null;
+		}
 	}
 }
