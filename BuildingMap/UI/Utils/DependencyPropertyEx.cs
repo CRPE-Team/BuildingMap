@@ -9,7 +9,7 @@ namespace BuildingMap.UI.Utils
 
 	public static class DependencyPropertyEx
 	{
-		private const string PropertySufix = "Property";
+		private const string PropertySuffix = "Property";
 
 		public static DependencyProperty Register<TProperty, TOwner>(TProperty defaultValue = default, [CallerMemberName] string name = "") where TOwner : DependencyObject
 		{
@@ -18,6 +18,18 @@ namespace BuildingMap.UI.Utils
 				typeof(TProperty),
 				typeof(TOwner),
 				new FrameworkPropertyMetadata(defaultValue));
+		}
+
+		public static DependencyProperty Register<TProperty, TOwner>(
+			FrameworkPropertyMetadataOptions flags, 
+			TProperty defaultValue = default, 
+			[CallerMemberName] string name = "") where TOwner : DependencyObject
+		{
+			return DependencyProperty.Register(
+				ResolvePropertyName(name),
+				typeof(TProperty),
+				typeof(TOwner),
+				new FrameworkPropertyMetadata(defaultValue, flags));
 		}
 
 		public static DependencyProperty Register<TProperty, TOwner>(
@@ -100,9 +112,9 @@ namespace BuildingMap.UI.Utils
 
 		private static string ResolvePropertyName(string name)
 		{
-			if (name.EndsWith(PropertySufix))
+			if (name.EndsWith(PropertySuffix))
 			{
-				return name.Substring(0, name.Length - PropertySufix.Length);
+				return name.Substring(0, name.Length - PropertySuffix.Length);
 			}
 
 			return name;

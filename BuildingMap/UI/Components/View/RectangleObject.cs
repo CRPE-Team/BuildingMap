@@ -1,19 +1,17 @@
-﻿using System;
-using System.ComponentModel;
+﻿using System.ComponentModel;
 using System.Windows;
-using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Shapes;
-using BuildingMap.UI.Components.View.Core.Utils;
 using BuildingMap.UI.Utils;
 
 namespace BuildingMap.UI.Components.View
 {
-    public partial class RectangleObject : BuildingGridItem
+	public partial class RectangleObject : BuildingGridItem
 	{
 		public static readonly DependencyProperty SizeProperty = DependencyPropertyEx.Register<Size, RectangleObject>(OnSizeChanged);
-
-		private static readonly Brush UnselectedBrush = new SolidColorBrush(Color.FromRgb(0x00, 0xD3, 0xEA));
+		public static readonly DependencyProperty ColorProperty = DependencyPropertyEx.Register<Color, RectangleObject>(OnViewChanged);
+		public static readonly DependencyProperty SelectedColorProperty = DependencyPropertyEx.Register<Color, RectangleObject>(OnViewChanged);
+		public static readonly DependencyProperty SelectedProperty = DependencyPropertyEx.Register<bool, RectangleObject>(OnViewChanged);
 
         private const int AuraSize = 4;
 
@@ -22,15 +20,23 @@ namespace BuildingMap.UI.Components.View
 		[Bindable(true)]
 		public Size Size { get => (Size) GetValue(SizeProperty); set => SetValue(SizeProperty, value); }
 
+		[Bindable(true)]
+		public Color Color { get => (Color) GetValue(ColorProperty); set => SetValue(ColorProperty, value); }
+
+		[Bindable(true)]
+		public Color SelectedColor { get => (Color) GetValue(SelectedColorProperty); set => SetValue(SelectedColorProperty, value); }
+
+		[Bindable(true)]
+		public bool Selected { get => (bool) GetValue(SelectedProperty); set => SetValue(SelectedProperty, value); }
+
 		public RectangleObject()
         {
             HorizontalAlignment = HorizontalAlignment.Left;
             VerticalAlignment = VerticalAlignment.Top;
 
-            Background = new SolidColorBrush(Color.FromArgb(0, 0, 0, 0));
+            Background = new SolidColorBrush(new Color());
 
             Children.Add(_rectangle = new Rectangle());
-            _rectangle.Fill = UnselectedBrush;
             _rectangle.Margin = new Thickness(AuraSize);
 
             //debug
@@ -52,6 +58,27 @@ namespace BuildingMap.UI.Components.View
 		private static void OnSizeChanged(RectangleObject d, DependencyPropertyChangedEventArgs e)
 		{
 			d.UpdateSize((Size) e.NewValue);
+		}
+
+		private static void OnViewChanged(RectangleObject d, DependencyPropertyChangedEventArgs e)
+		{
+			d.SetSelect(d.Selected);
+		}
+
+		private void SetSelect(bool selected)
+		{
+			if (selected)
+			{
+				_rectangle.Stroke = new SolidColorBrush(Color);
+				_rectangle.Fill = new SolidColorBrush(SelectedColor);
+				_rectangle.StrokeThickness = 3;
+			}
+			else
+			{
+				_rectangle.Stroke = null;
+				_rectangle.StrokeThickness = 0;
+				_rectangle.Fill = new SolidColorBrush(Color);
+			}
 		}
 
 		private void UpdateSize(Size size)

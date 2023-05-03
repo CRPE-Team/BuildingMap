@@ -1,7 +1,10 @@
 ﻿using System.Collections.ObjectModel;
-using System.Threading.Tasks;
 using System.Windows;
+using System.Windows.Input;
 using System.Windows.Media;
+using BuildingMap.UI.Components.View.Core.Utils;
+using BuildingMap.UI.Logics;
+using BuildingMap.UI.Utils;
 
 namespace BuildingMap.UI.Pages.ViewModel
 {
@@ -12,14 +15,22 @@ namespace BuildingMap.UI.Pages.ViewModel
 		private Color _background;
 		private double _zoom = 1;
 
-		public MapPageViewModel(MapEditModeViewModel editModeViewModel)
+		private readonly MapItemsFactory _mapItemsFactory;
+
+		public MapPageViewModel(
+			MapItemsFactory mapItemsFactory,
+			MapEditModeViewModel editModeViewModel)
 		{
+			_mapItemsFactory = mapItemsFactory;
+
 			MapEditModeViewModel = editModeViewModel;
 		}
 
 		public MapEditModeViewModel MapEditModeViewModel { get; }
 
 		public ObservableCollection<MapItemViewModel> Items { get; } = new ObservableCollection<MapItemViewModel>();
+
+		public MapItemViewModel SelectedItem { get; private set; }
 
 		public int GridSize
 		{
@@ -59,6 +70,34 @@ namespace BuildingMap.UI.Pages.ViewModel
 				_zoom = value;
 				OnPropertyChanged();
 			}
+		}
+
+		public Vector MousePosition { get; set; }
+
+		public void SelectItem(MapItemViewModel item)
+		{
+			if (SelectedItem != null)
+			{
+				SelectedItem.IsSelected = false;
+			}
+
+			item.IsSelected = true;
+			SelectedItem = item;
+		}
+
+		public void OnClickItem(object sender, MouseButtonEventArgs args)
+		{
+			if (!DataContextHelper.TryGetDataContext<MapItemViewModel>(sender, out var item)) return;
+			if (DragManager.Moving) return;
+
+			SelectItem(item);
+		}
+
+		public void OnStartDraw(object sender, StartDrawEventArgs args)
+		{
+			var newItem = _mapItemsFactory.CreateNew();
+			args.CreatedObject = newItem;
+			Items.Add(newItem);
 		}
 	}
 }

@@ -45,10 +45,10 @@ namespace BuildingMap.UI.Components.View
                 _reseDirection = null;
                 Mouse.OverrideCursor = _defaultCursor;
 
-                if (Size.IsZeroSize())
-                {
-                    Grid.Children.Remove(this);
-                }
+                //if (Size.IsZeroSize())
+                //{
+                //    Grid.Children.Remove(this);
+                //}
             }
         }
 

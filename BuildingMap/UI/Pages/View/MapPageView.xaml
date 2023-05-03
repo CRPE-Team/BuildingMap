@@ -3,6 +3,7 @@
       xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
       xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
       xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+      xmlns:b="http://schemas.microsoft.com/xaml/behaviors"
       xmlns:components.core="clr-namespace:BuildingMap.UI.Components.View.Core"
       xmlns:components="clr-namespace:BuildingMap.UI.Components.View"
       xmlns:viewModel="clr-namespace:BuildingMap.UI.Pages.ViewModel"
@@ -18,9 +19,24 @@
 	
 	<Grid>
         <components.core:DragGrid>
-			<components:BuildingGrid ItemsSource="{Binding Items}" AllowEdit="{Binding MapEditModeViewModel.AllowEdit, Mode=TwoWay}" Offset="{Binding Offset}" Zoom="{Binding Zoom}">
+			<components:BuildingGrid 
+				ItemsSource="{Binding Items}" 
+				AllowEdit="{Binding MapEditModeViewModel.AllowEdit, Mode=TwoWay}" 
+				Offset="{Binding Offset}" 
+				Zoom="{Binding Zoom}"
+				MousePosition="{Binding MousePosition}">
+
+				<b:Interaction.Triggers>
+					<b:EventTrigger EventName="StartDraw">
+						<b:CallMethodAction TargetObject="{Binding}" MethodName="OnStartDraw"/>
+					</b:EventTrigger>
+				</b:Interaction.Triggers>
+
 				<components:BuildingGrid.Grid>
-					<components:BackgroundGrid BackgroundColor="{Binding Background}" Show="{Binding MapEditModeViewModel.AllowEdit}" GridSize="{Binding GridSize}"/>
+					<components:BackgroundGrid 
+						BackgroundColor="{Binding Background}" 
+						Show="{Binding MapEditModeViewModel.AllowEdit}" 
+						GridSize="{Binding GridSize}"/>
                 </components:BuildingGrid.Grid>
 
 				<components:BuildingGrid.BackgroundImage>
@@ -39,9 +55,23 @@
 
 				<components:BuildingGrid.ItemTemplate>
 					<DataTemplate>
-						<components:RectangleObject Position="{Binding Position}" Size="{Binding Size}" />
+						<components:RectangleObject 
+							Position="{Binding Position}" 
+							Size="{Binding Size}"
+							Color="{Binding Color}"
+							SelectedColor="{Binding SelectedColor}"
+							Selected="{Binding IsSelected}">
+
+							<b:Interaction.Triggers>
+								<b:EventTrigger EventName="MouseUp">
+									<b:CallMethodAction TargetObject="{Binding DataContext, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type components:BuildingGrid}}}" MethodName="OnClickItem" />
+								</b:EventTrigger>
+							</b:Interaction.Triggers>
+
+						</components:RectangleObject>
 					</DataTemplate>
 				</components:BuildingGrid.ItemTemplate>
+				
 			</components:BuildingGrid>
         </components.core:DragGrid>
     </Grid>

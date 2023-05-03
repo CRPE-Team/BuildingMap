@@ -13,6 +13,8 @@ namespace BuildingMap.UI.Components.View
         {
             _drawing = true;
             _startDrawPosition = Grid.MousePosition;
+			Size = new Size();
+			Cursor = null;
 
             Position = _startDrawPosition.Floor().ToPoint();
         }

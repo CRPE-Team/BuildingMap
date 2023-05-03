@@ -23,6 +23,16 @@ namespace BuildingMap.UI.Components.View.Core
 		[Bindable(true)]
 		public DataTemplate ItemTemplate { get => (DataTemplate) GetValue(ItemTemplateProperty); set => SetValue(ItemTemplateProperty, value); }
 
+		protected void AddItem(object item)
+		{
+			Add(new[] { item });
+		}
+
+		protected void RemoveItem(object item)
+		{
+			Remove(new[] { item });
+		}
+
 		private static void OnItemsSourceChanged(ObservableGrid d, DependencyPropertyChangedEventArgs e)
 		{
 			if (e.OldValue is INotifyCollectionChanged oldValue)

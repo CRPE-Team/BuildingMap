@@ -15,6 +15,9 @@ namespace BuildingMap.UI.Components.View
 		public static readonly DependencyProperty AllowEditProperty = DependencyPropertyEx.Register<bool, BuildingGrid>();
 		public static readonly DependencyProperty OffsetProperty = DependencyPropertyEx.Register<Vector, BuildingGrid>(OnOffsetChanged, FrameworkPropertyMetadataOptions.BindsTwoWayByDefault);
 		public static readonly DependencyProperty ZoomProperty = DependencyPropertyEx.Register<double, BuildingGrid>(OnZoomChanged, ZoomCoerce, FrameworkPropertyMetadataOptions.BindsTwoWayByDefault, 1);
+		public static readonly DependencyProperty MousePositionProperty = DependencyPropertyEx.Register<Vector, BuildingGrid>(FrameworkPropertyMetadataOptions.SubPropertiesDoNotAffectRender | FrameworkPropertyMetadataOptions.BindsTwoWayByDefault);
+		public static readonly RoutedEvent StartDrawEvent = EventManagerEx.Register<EventHandler<StartDrawEventArgs>, BuildingGrid>();
+		public static readonly RoutedEvent StopDrawEvent = EventManagerEx.Register<RoutedEventHandler, BuildingGrid>();
 
 		private static readonly DragContext DragContext = new DragContext();
         private const int GridReserve = 200;
@@ -27,7 +30,6 @@ namespace BuildingMap.UI.Components.View
 
         private BackgroundGrid _gridBackground;
         private BackgroundImage _imageBackground;
-
 		private IDrawable _drawable;
 
         public bool CanDrag => Mouse.LeftButton == MouseButtonState.Pressed || Mouse.RightButton == MouseButtonState.Pressed;
@@ -41,11 +43,12 @@ namespace BuildingMap.UI.Components.View
 		public Vector RenderOffset { get => Offset + _offsetCenterFix; set => Offset = value - _offsetCenterFix; }
 
 		[Bindable(true)]
-		public Vector Offset  { get => (Vector) GetValue(OffsetProperty); set => SetValue(OffsetProperty, value); }
+		public Vector Offset { get => (Vector) GetValue(OffsetProperty); set => SetValue(OffsetProperty, value); }
 
-		public Vector MousePosition => Mouse.GetPosition(this).ToVector() / GridSize + _shift - RenderOffset;
+		[Bindable(true)]
+		public Vector MousePosition { get => (Vector) GetValue(MousePositionProperty); set => SetValue(MousePositionProperty, value); }
 
-        public double RenderGridSize => GridSize * Zoom;
+		public double RenderGridSize => GridSize * Zoom;
 
 		public int GridSize => Grid?.GridSize ?? 1;
 
@@ -71,6 +74,9 @@ namespace BuildingMap.UI.Components.View
             }
 		}
 
+		public event EventHandler<StartDrawEventArgs> StartDraw { add { AddHandler(StartDrawEvent, value); } remove { RemoveHandler(StartDrawEvent, value); } }
+		public event RoutedEventHandler StopDraw { add { AddHandler(StopDrawEvent, value); } remove { RemoveHandler(StopDrawEvent, value); } }
+
 		public BuildingGrid()
         {
 			Margin = new Thickness(-GridReserve);
@@ -87,51 +93,17 @@ namespace BuildingMap.UI.Components.View
 			if (Application.Current?.MainWindow != null) Application.Current.MainWindow.KeyDown += OnKeyDown;
 		}
 
-		private static void OnOffsetChanged(BuildingGrid d, DependencyPropertyChangedEventArgs e)
-		{
-			d.Shift();
-		}
-
-		private static object ZoomCoerce(BuildingGrid d, double scale)
-		{
-			return Math.Max(0.2, Math.Min(10, scale));
-		}
-
-		private static void OnZoomChanged(BuildingGrid d, DependencyPropertyChangedEventArgs e)
-		{
-			var mouseFromCenterPos = Mouse.GetPosition(d).ToVector() / d.GridSize + d._shift - d._offsetCenterFix;
-
-			var scale = d._scaleTransform.ScaleX = d._scaleTransform.ScaleY = (double) e.NewValue;
-
-			d.Margin = new Thickness(-GridReserve / scale * 4);
-			d._offsetCenterFix = new Vector(d.ActualWidth, d.ActualHeight) / d.GridSize / 2;
-
-			d.UpdateShift();
-
-			var newMouseFromCenterPos = Mouse.GetPosition(d).ToVector() / d.GridSize + d._shift - d._offsetCenterFix;
-			d.RenderOffset -= mouseFromCenterPos - newMouseFromCenterPos;
-
-			d.Shift();
-		}
-
-		protected override void OnRenderSizeChanged(SizeChangedInfo sizeInfo)
-        {
-			_offsetCenterFix = new Vector(sizeInfo.NewSize.Width, sizeInfo.NewSize.Height) / GridSize / 2;
-            Shift();
-
-            base.OnRenderSizeChanged(sizeInfo);
-        }
-
         public DragContext StartDrag()
         {
             if (AllowEdit)
             {
                 if (Mouse.LeftButton == MouseButtonState.Pressed)
-                {
-                    _drawable = new RectangleObject();
-                    Children.Add(_drawable as UIElement);
+				{
+					var args = new StartDrawEventArgs(StartDrawEvent);
+					RaiseEvent(args);
 
-                    _drawable.StartDraw();
+					_drawable = Children.OfType<FrameworkElement>().FirstOrDefault(obj => obj.DataContext == args.CreatedObject) as IDrawable;
+					_drawable?.StartDraw();
                 }
             }
 
@@ -139,14 +111,11 @@ namespace BuildingMap.UI.Components.View
         }
 
         public void StopDrag()
-        {
-            if (!_drawable?.EndDraw() ?? false)
-            {
-                Children.Remove(_drawable as UIElement);
-            }
-
-            _drawable = null;
-        }
+		{
+			RaiseEvent(new RoutedEventArgs(StopDrawEvent));
+			_drawable?.EndDraw();
+			_drawable = null;
+		}
 
         public void Drag(Point position, Vector offset)
         {
@@ -162,7 +131,7 @@ namespace BuildingMap.UI.Components.View
             }
             else if (Mouse.LeftButton == MouseButtonState.Pressed)
             {
-                _drawable?.Draw();
+				_drawable?.Draw();
             }
         }
 
@@ -200,10 +169,25 @@ namespace BuildingMap.UI.Components.View
             else if (e.Key == Key.Down)
             {
                 Shift(new Vector(0, 5));
-            }
-        }
+			}
+		}
 
-        protected override void OnPreviewMouseWheel(MouseWheelEventArgs e)
+		protected override void OnMouseMove(MouseEventArgs e)
+		{
+			base.OnMouseMove(e);
+
+			MousePosition = Mouse.GetPosition(this).ToVector() / GridSize + _shift - RenderOffset;
+		}
+
+		protected override void OnRenderSizeChanged(SizeChangedInfo sizeInfo)
+		{
+			_offsetCenterFix = new Vector(sizeInfo.NewSize.Width, sizeInfo.NewSize.Height) / GridSize / 2;
+			Shift();
+
+			base.OnRenderSizeChanged(sizeInfo);
+		}
+
+		protected override void OnPreviewMouseWheel(MouseWheelEventArgs e)
         {
             var scaleChange = 1 + e.Delta / 1700d;
 
@@ -216,7 +200,34 @@ namespace BuildingMap.UI.Components.View
 			Zoom *= scaleChange;
 		}
 
-        private void Shift(Vector offset = default)
+		private static void OnOffsetChanged(BuildingGrid d, DependencyPropertyChangedEventArgs e)
+		{
+			d.Shift();
+		}
+
+		private static object ZoomCoerce(BuildingGrid d, double scale)
+		{
+			return Math.Max(0.2, Math.Min(10, scale));
+		}
+
+		private static void OnZoomChanged(BuildingGrid d, DependencyPropertyChangedEventArgs e)
+		{
+			var mouseFromCenterPos = Mouse.GetPosition(d).ToVector() / d.GridSize + d._shift - d._offsetCenterFix;
+
+			var scale = d._scaleTransform.ScaleX = d._scaleTransform.ScaleY = (double) e.NewValue;
+
+			d.Margin = new Thickness(-GridReserve / scale * 4);
+			d._offsetCenterFix = new Vector(d.ActualWidth, d.ActualHeight) / d.GridSize / 2;
+
+			d.UpdateShift();
+
+			var newMouseFromCenterPos = Mouse.GetPosition(d).ToVector() / d.GridSize + d._shift - d._offsetCenterFix;
+			d.RenderOffset -= mouseFromCenterPos - newMouseFromCenterPos;
+
+			d.Shift();
+		}
+
+		private void Shift(Vector offset = default)
         {
 			RenderOffset += offset / RenderGridSize;
 

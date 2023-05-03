@@ -11,6 +11,7 @@ namespace BuildingMap.UI
 			Container.RegisterType<MainWindow>(TypeLifetime.Transient);
 
 			Container.AddNewExtension<Pages.ContainerExtension>();
+			Container.AddNewExtension<Logics.ContainerExtension>();
 		}
     }
 }
