@@ -1,15 +1,23 @@
 ﻿using System.Windows;
 using System.Windows.Media;
+using BuildingMap.UI.Utils;
 
 namespace BuildingMap.UI.Pages.ViewModel
 {
 	public class MapItemViewModel : ObservableObject
 	{
+		private readonly ClipboardManager _clipboardManager;
+
 		private Point _position;
 		private Size _size;
 		private Color _color;
 		private Color _selectedColor;
 		private bool _isSelected;
+
+		public MapItemViewModel(ClipboardManager clipboardManager)
+		{
+			_clipboardManager = clipboardManager;
+		}
 
 		public Point Position
 		{
@@ -59,6 +67,11 @@ namespace BuildingMap.UI.Pages.ViewModel
 				_isSelected = value;
 				OnPropertyChanged();
 			}
+		}
+
+		public void CopyToClipboard()
+		{
+			_clipboardManager.SetData(this);
 		}
 	}
 }

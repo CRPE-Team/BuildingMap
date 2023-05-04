@@ -99,5 +99,19 @@ namespace BuildingMap.UI.Pages.ViewModel
 			args.CreatedObject = newItem;
 			Items.Add(newItem);
 		}
+
+		public void CopyElement()
+		{
+			SelectedItem.CopyToClipboard();
+		}
+
+		public void InsertElement()
+		{	
+			if (!_mapItemsFactory.TryCreateCopyFromClipboard(out var copy)) return;
+
+			copy.Position = (MousePosition - copy.Size.ToVector() / 2).Floor().ToPoint();
+
+			Items.Add(copy);
+		}
 	}
 }

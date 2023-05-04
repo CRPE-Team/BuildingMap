@@ -1,4 +1,5 @@
-﻿using Unity;
+﻿using BuildingMap.UI.Pages.ViewModel;
+using Unity;
 using Unity.Extension;
 
 namespace BuildingMap.UI.Logics
@@ -8,6 +9,7 @@ namespace BuildingMap.UI.Logics
 		protected override void Initialize()
 		{
 			Container.RegisterSingleton<MapItemsFactory>();
+			Container.RegisterInstance(() => Container.Resolve<MapItemViewModel>());
 		}
 	}
 }

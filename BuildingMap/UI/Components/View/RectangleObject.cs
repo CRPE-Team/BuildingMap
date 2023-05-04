@@ -8,7 +8,7 @@ namespace BuildingMap.UI.Components.View
 {
 	public partial class RectangleObject : BuildingGridItem
 	{
-		public static readonly DependencyProperty SizeProperty = DependencyPropertyEx.Register<Size, RectangleObject>(OnSizeChanged);
+		public static readonly DependencyProperty SizeProperty = DependencyPropertyEx.Register<Size, RectangleObject>(OnSizeChanged, FrameworkPropertyMetadataOptions.BindsTwoWayByDefault);
 		public static readonly DependencyProperty ColorProperty = DependencyPropertyEx.Register<Color, RectangleObject>(OnViewChanged);
 		public static readonly DependencyProperty SelectedColorProperty = DependencyPropertyEx.Register<Color, RectangleObject>(OnViewChanged);
 		public static readonly DependencyProperty SelectedProperty = DependencyPropertyEx.Register<bool, RectangleObject>(OnViewChanged);

@@ -30,6 +30,12 @@
 					<b:EventTrigger EventName="StartDraw">
 						<b:CallMethodAction TargetObject="{Binding}" MethodName="OnStartDraw"/>
 					</b:EventTrigger>
+					<b:KeyTrigger Key="C" FiredOn="KeyDown" Modifiers="Ctrl">
+						<b:CallMethodAction TargetObject="{Binding}" MethodName="CopyElement" />
+					</b:KeyTrigger>
+					<b:KeyTrigger Key="V" FiredOn="KeyDown" Modifiers="Ctrl">
+						<b:CallMethodAction TargetObject="{Binding}" MethodName="InsertElement" />
+					</b:KeyTrigger>
 				</b:Interaction.Triggers>
 
 				<components:BuildingGrid.Grid>

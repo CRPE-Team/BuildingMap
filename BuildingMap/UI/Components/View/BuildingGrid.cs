@@ -88,9 +88,6 @@ namespace BuildingMap.UI.Components.View
 
             transformGroup.Children.Add(_scaleTransform = new ScaleTransform());
             transformGroup.Children.Add(_translateTransform = new TranslateTransform());
-
-			//debug
-			if (Application.Current?.MainWindow != null) Application.Current.MainWindow.KeyDown += OnKeyDown;
 		}
 
         public DragContext StartDrag()
@@ -134,43 +131,6 @@ namespace BuildingMap.UI.Components.View
 				_drawable?.Draw();
             }
         }
-
-        //debug
-        protected void OnKeyDown(object source, KeyEventArgs e)
-        {
-            if (e.Key == Key.Q)
-            {
-                OnPreviewMouseWheel(new MouseWheelEventArgs(Mouse.PrimaryDevice, 0, 0));
-            }
-            else if (e.Key == Key.F)
-            {
-                Shift(new Vector());
-            }
-            else if (e.Key == Key.G)
-            {
-                Grid.Show = !Grid.Show;
-            }
-            else if (e.Key == Key.E)
-            {
-                AllowEdit = !AllowEdit;
-            }
-            else if (e.Key == Key.Right)
-            {
-                Shift(new Vector(5, 0));
-            }
-            else if (e.Key == Key.Left)
-            {
-                Shift(new Vector(-5, 0));
-            }
-            else if (e.Key == Key.Up)
-            {
-                Shift(new Vector(0, -5));
-            }
-            else if (e.Key == Key.Down)
-            {
-                Shift(new Vector(0, 5));
-			}
-		}
 
 		protected override void OnMouseMove(MouseEventArgs e)
 		{
