@@ -36,6 +36,9 @@
 					<b:KeyTrigger Key="V" FiredOn="KeyDown" Modifiers="Ctrl">
 						<b:CallMethodAction TargetObject="{Binding}" MethodName="InsertElement" />
 					</b:KeyTrigger>
+					<b:KeyTrigger Key="Delete" FiredOn="KeyDown">
+						<b:CallMethodAction TargetObject="{Binding}" MethodName="DeleteElement" />
+					</b:KeyTrigger>
 				</b:Interaction.Triggers>
 
 				<components:BuildingGrid.Grid>

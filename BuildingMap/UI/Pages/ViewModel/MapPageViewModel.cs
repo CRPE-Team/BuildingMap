@@ -113,5 +113,13 @@ namespace BuildingMap.UI.Pages.ViewModel
 
 			Items.Add(copy);
 		}
+
+		public void DeleteElement()
+		{
+			if (SelectedItem == null) return;
+
+			Items.Remove(SelectedItem);
+			SelectedItem = null;
+		}
 	}
 }
