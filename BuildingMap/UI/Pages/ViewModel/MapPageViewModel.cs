@@ -10,6 +10,8 @@ namespace BuildingMap.UI.Pages.ViewModel
 {
 	public class MapPageViewModel : ObservableObject
 	{
+		private MapItemViewModel _drawingItem;
+
 		private int _gridSize = 5;
 		private Vector _offset;
 		private Color _background;
@@ -24,6 +26,8 @@ namespace BuildingMap.UI.Pages.ViewModel
 			_mapItemsFactory = mapItemsFactory;
 
 			MapEditModeViewModel = editModeViewModel;
+
+			Items.Add(_mapItemsFactory.CreateNew());
 		}
 
 		public MapEditModeViewModel MapEditModeViewModel { get; }
@@ -98,6 +102,18 @@ namespace BuildingMap.UI.Pages.ViewModel
 			var newItem = _mapItemsFactory.CreateNew();
 			args.CreatedObject = newItem;
 			Items.Add(newItem);
+
+			_drawingItem = newItem;
+		}
+
+		public void OnStopDraw()
+		{
+			if (_drawingItem.Size.IsZeroSize())
+			{
+				Items.Remove(_drawingItem);
+			}
+
+			_drawingItem = null;
 		}
 
 		public void CopyElement()

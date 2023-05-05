@@ -32,6 +32,9 @@
 					<b:EventTrigger EventName="StartDraw">
 						<b:CallMethodAction TargetObject="{Binding}" MethodName="OnStartDraw"/>
 					</b:EventTrigger>
+					<b:EventTrigger EventName="StopDraw">
+						<b:CallMethodAction TargetObject="{Binding}" MethodName="OnStopDraw"/>
+					</b:EventTrigger>
 					<b:KeyTrigger Key="C" FiredOn="KeyDown" Modifiers="Ctrl">
 						<b:CallMethodAction TargetObject="{Binding}" MethodName="CopyElement" />
 					</b:KeyTrigger>
@@ -42,6 +45,13 @@
 						<b:CallMethodAction TargetObject="{Binding}" MethodName="DeleteElement" />
 					</b:KeyTrigger>
 				</b:Interaction.Triggers>
+
+				<components:BuildingGrid.ContextMenu>
+					<ContextMenu>
+						<MenuItem Header="Select background image" Command="{Binding MapEditModeViewModel.BackgroundImageViewModel.SelectBackgroundImageCommand}" />
+						<MenuItem Header="Remove background image" Command="{Binding MapEditModeViewModel.BackgroundImageViewModel.RemoveBackgroundImageCommand}" />
+					</ContextMenu>
+				</components:BuildingGrid.ContextMenu>
 
 				<components:BuildingGrid.Grid>
 					<components:BackgroundGrid 

@@ -43,6 +43,8 @@ namespace BuildingMap.UI.Components.View
 
             Children.Add(_rectangle = new Rectangle());
             _rectangle.Margin = new Thickness(AuraSize);
+
+			Width = Height = 0;
         }
 
         public override void Update()

@@ -71,7 +71,7 @@ namespace BuildingMap.UI.Components.View
 
 		private static void OnImageSourcePathChanged(BackgroundImage d, DependencyPropertyChangedEventArgs e)
 		{
-			d.UpdateImage((string) e.NewValue);
+			d.UpdateImage((string) e.OldValue, (string) e.NewValue);
 		}
 
 		private static object ScaleCoerce(BackgroundImage d, double scale)
@@ -85,9 +85,9 @@ namespace BuildingMap.UI.Components.View
 			if (d.Grid != null) d.Update();
 		}
 
-		private void UpdateImage(string path)
+		private void UpdateImage(string oldPath, string path)
         {
-			if (path == null) return;
+			if (path == null && oldPath == null) return; 
 
             if (!File.Exists(path))
             {

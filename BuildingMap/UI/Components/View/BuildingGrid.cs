@@ -2,6 +2,7 @@
 using System.ComponentModel;
 using System.Linq;
 using System.Windows;
+using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media;
 using BuildingMap.UI.Components.View.Core;
@@ -109,12 +110,15 @@ namespace BuildingMap.UI.Components.View
 
         public void StopDrag()
 		{
-			RaiseEvent(new RoutedEventArgs(StopDrawEvent));
-			_drawable?.EndDraw();
-			_drawable = null;
+			if (_drawable != null)
+			{
+				RaiseEvent(new RoutedEventArgs(StopDrawEvent));
+				_drawable.EndDraw();
+				_drawable = null;
+			}	
 		}
 
-        public void Drag(Point position, Vector offset)
+		public void Drag(Point position, Vector offset)
         {
             if (AllowEdit
                 && Mouse.RightButton == MouseButtonState.Pressed

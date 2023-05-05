@@ -8,12 +8,15 @@ namespace BuildingMap.UI.Components.View.Core.Utils
         private DragContext _dragContext;
         private static bool _dragging;
         private static bool _moving;
+		private static bool _wasMoving;
         private Point _mouseStartPosition;
 
-        public static bool Dragging => _dragging;
+		public static bool Dragging => _dragging;
         public static bool Moving => _moving;
+		public static bool WasMoving => _wasMoving;
 
-        public UIElement Source { get; }
+
+		public UIElement Source { get; }
         public static IDraggable SelectedElement { get; private set; }
 
         public DragManager(UIElement source)
@@ -43,6 +46,7 @@ namespace BuildingMap.UI.Components.View.Core.Utils
             if (_dragging) return false;
 
             _dragging = true;
+			_wasMoving = false;
             _mouseStartPosition = Mouse.GetPosition(Source);
 
             SelectedElement = element;
@@ -94,10 +98,11 @@ namespace BuildingMap.UI.Components.View.Core.Utils
             if (!_moving)
             {
                 if (distance > _dragContext.DragStartDistance)
-                {
-                    _moving = true;
-                }
-                else
+				{
+					_moving = true;
+					_wasMoving = true;
+				}
+				else
                 {
                     return;
                 }

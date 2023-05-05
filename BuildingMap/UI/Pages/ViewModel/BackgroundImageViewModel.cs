@@ -1,18 +1,23 @@
 ﻿using System.Windows;
+using Microsoft.Win32;
 
 namespace BuildingMap.UI.Pages.ViewModel
 {
 	public class BackgroundImageViewModel : ObservableObject
 	{
-		private string _path = @"C:\Users\Lashov\source\repos\BuildingMap\BuildingMap\UI\Pages\Izuku-Midoriya-Изуку-Мидория-Моя-Геройская-Академия-арты-картинки-12.jpg";
+		private string _path;
 		private Point _position;
 		private double _scale = 0.4;
 		private bool _show;
 
 		public BackgroundImageViewModel()
 		{
-
+			SelectBackgroundImageCommand = new RelayCommand(SelectBackgroundImage);
+			RemoveBackgroundImageCommand = new RelayCommand(RemoveBackgroundImage);
 		}
+
+		public RelayCommand SelectBackgroundImageCommand { get; }
+		public RelayCommand RemoveBackgroundImageCommand { get; }
 
 		public string Path
 		{
@@ -52,6 +57,21 @@ namespace BuildingMap.UI.Pages.ViewModel
 				_show = value;
 				OnPropertyChanged();
 			}
+		}
+
+		private void SelectBackgroundImage()
+		{
+			var openFileDialog = new OpenFileDialog();
+			var result = openFileDialog.ShowDialog();
+
+			if (!result.Value) return;
+
+			Path = openFileDialog.FileName;
+		}
+
+		private void RemoveBackgroundImage()
+		{
+			Path = null;
 		}
 	}
 }
