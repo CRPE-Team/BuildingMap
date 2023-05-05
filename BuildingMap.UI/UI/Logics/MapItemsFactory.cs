@@ -25,7 +25,7 @@ namespace BuildingMap.UI.Logics
 			mapItem.SelectedColor = Color.FromRgb(0x00, 0xF3, 0xEA);
 			mapItem.FontSize = 12;
 			mapItem.ForegroundColor = Color.FromRgb(0x00, 0x00, 0x00);
-			mapItem.ImageSource = "C:\\Users\\Grinev\\source\\repos\\CRPE-Team\\BuildingMap\\BuildingMap\\UI\\Pages\\Izuku-Midoriya-Изуку-Мидория-Моя-Геройская-Академия-арты-картинки-12.jpg";
+			mapItem.ImageSource = "C:\\Users\\Grinev\\source\\repos\\CRPE-Team\\BuildingMap\\BuildingMap.UI\\UI\\Pages\\Izuku-Midoriya-Изуку-Мидория-Моя-Геройская-Академия-арты-картинки-12.jpg";
 			mapItem.ImageScale = 0.8;
 
 			return mapItem;

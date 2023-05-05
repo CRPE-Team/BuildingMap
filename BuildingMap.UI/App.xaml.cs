@@ -26,6 +26,7 @@ namespace BuildingMap
             Container.RegisterInstance(this);
 
             Container.AddNewExtension<UI.ContainerExtension>();
+			Container.AddNewExtension<Logic.ContainerExtension>();
 
             return Container;
         }

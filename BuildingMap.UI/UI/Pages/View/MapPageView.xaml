@@ -27,7 +27,7 @@
 				Offset="{Binding Offset}" 
 				Zoom="{Binding Zoom}"
 				MousePosition="{Binding MousePosition}">
-
+				
 				<b:Interaction.Triggers>
 					<b:EventTrigger EventName="StartDraw">
 						<b:CallMethodAction TargetObject="{Binding}" MethodName="OnStartDraw"/>
