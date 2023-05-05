@@ -71,13 +71,23 @@
 							Size="{Binding Size}"
 							Color="{Binding Color}"
 							SelectedColor="{Binding SelectedColor}"
-							Selected="{Binding IsSelected}">
+							Selected="{Binding IsSelected}"
+							Radius="{Binding Radius}">
 
 							<b:Interaction.Triggers>
 								<b:EventTrigger EventName="MouseUp">
 									<b:CallMethodAction TargetObject="{Binding DataContext, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type components:BuildingGrid}}}" MethodName="OnClickItem" />
 								</b:EventTrigger>
 							</b:Interaction.Triggers>
+
+							<Image 
+								RenderTransformOrigin="0.5 0.5" 
+								Margin="{Binding Source={x:Static components:RectangleObject.AuraSize}}"
+								Source="{Binding ImageSource}">
+								<Image.RenderTransform>
+									<ScaleTransform ScaleX="{Binding ImageScale}" ScaleY="{Binding ImageScale}" />
+								</Image.RenderTransform>
+							</Image>
 
 							<Label 
 								Content="{Binding Text}"

@@ -13,11 +13,15 @@ namespace BuildingMap.UI.Pages.ViewModel
 		private Color _color;
 		private Color _selectedColor;
 		private bool _isSelected;
+		private double _radius;
 
 		private string _text;
-		private int _fontSize = 12;
+		private int _fontSize;
 		private Color _foregroundColor;
 		private RotationAngle _rotationAngle;
+
+		private string _imageSource;
+		private double _imageScale;
 
 		public MapItemViewModel(ClipboardManager clipboardManager)
 		{
@@ -39,6 +43,9 @@ namespace BuildingMap.UI.Pages.ViewModel
 			get => _size;
 			set
 			{
+				if (value.Width == 0) value.Width = 1;
+				if (value.Height == 0) value.Height = 1;
+
 				_size = value;
 				OnPropertyChanged();
 			}
@@ -70,6 +77,16 @@ namespace BuildingMap.UI.Pages.ViewModel
 			set
 			{
 				_isSelected = value;
+				OnPropertyChanged();
+			}
+		}
+
+		public double Radius
+		{
+			get => _radius;
+			set
+			{
+				_radius = value;
 				OnPropertyChanged();
 			}
 		}
@@ -110,6 +127,26 @@ namespace BuildingMap.UI.Pages.ViewModel
 			set
 			{
 				_rotationAngle = value;
+				OnPropertyChanged();
+			}
+		}
+
+		public string ImageSource
+		{
+			get => _imageSource;
+			set
+			{
+				_imageSource = value;
+				OnPropertyChanged();
+			}
+		}
+
+		public double ImageScale
+		{
+			get => _imageScale;
+			set
+			{
+				_imageScale = value;
 				OnPropertyChanged();
 			}
 		}

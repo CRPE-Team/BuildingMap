@@ -1,5 +1,6 @@
 ﻿using System.ComponentModel;
 using System.Windows;
+using System.Windows.Controls;
 using System.Windows.Media;
 using System.Windows.Shapes;
 using BuildingMap.UI.Utils;
@@ -12,8 +13,9 @@ namespace BuildingMap.UI.Components.View
 		public static readonly DependencyProperty ColorProperty = DependencyPropertyEx.Register<Color, RectangleObject>(OnViewChanged);
 		public static readonly DependencyProperty SelectedColorProperty = DependencyPropertyEx.Register<Color, RectangleObject>(OnViewChanged);
 		public static readonly DependencyProperty SelectedProperty = DependencyPropertyEx.Register<bool, RectangleObject>(OnViewChanged);
+		public static readonly DependencyProperty RadiusProperty = DependencyPropertyEx.Register<double, RectangleObject>(OnRadiusChanged);
 
-		private const int AuraSize = 4;
+		public const int AuraSize = 4;
 
         private readonly Rectangle _rectangle;
 
@@ -29,6 +31,9 @@ namespace BuildingMap.UI.Components.View
 		[Bindable(true)]
 		public bool Selected { get => (bool) GetValue(SelectedProperty); set => SetValue(SelectedProperty, value); }
 
+		[Bindable(true)]
+		public double Radius { get => (double) GetValue(RadiusProperty); set => SetValue(RadiusProperty, value); }
+
 		public RectangleObject()
         {
             HorizontalAlignment = HorizontalAlignment.Left;
@@ -38,10 +43,6 @@ namespace BuildingMap.UI.Components.View
 
             Children.Add(_rectangle = new Rectangle());
             _rectangle.Margin = new Thickness(AuraSize);
-
-            //debug
-            _rectangle.RadiusX = 10;
-            _rectangle.RadiusY = 10;
         }
 
         public override void Update()
@@ -63,6 +64,11 @@ namespace BuildingMap.UI.Components.View
 		private static void OnViewChanged(RectangleObject d, DependencyPropertyChangedEventArgs e)
 		{
 			d.SetSelect(d.Selected);
+		}
+
+		private static void OnRadiusChanged(RectangleObject d, DependencyPropertyChangedEventArgs e)
+		{
+			d._rectangle.RadiusX = d._rectangle.RadiusY = (double) e.NewValue;
 		}
 
 		private void SetSelect(bool selected)
