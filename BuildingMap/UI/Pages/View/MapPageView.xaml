@@ -15,6 +15,8 @@
 
 	<Page.Resources>
 		<utils:BooleanOrLogicalConverter x:Key="booleanOrLogicalConverter"/>
+		<utils:ColorToBrushConverter x:Key="colorToBrushConverter" />
+		<utils:RotationAngleConverter x:Key="rotationAngleConverter" />
 	</Page.Resources>
 	
 	<Grid>
@@ -76,6 +78,19 @@
 									<b:CallMethodAction TargetObject="{Binding DataContext, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type components:BuildingGrid}}}" MethodName="OnClickItem" />
 								</b:EventTrigger>
 							</b:Interaction.Triggers>
+
+							<Label 
+								Content="{Binding Text}"
+								FontSize="{Binding FontSize}" 
+								Foreground="{Binding ForegroundColor, Converter={StaticResource colorToBrushConverter}}"
+								HorizontalAlignment="Center" 
+								VerticalAlignment="Center"
+								RenderTransformOrigin="0.5 0.5"
+								FontWeight="Bold">
+								<Label.RenderTransform>
+									<RotateTransform Angle="{Binding RotationAngle, Converter={StaticResource rotationAngleConverter}}" />
+								</Label.RenderTransform>
+							</Label>
 
 						</components:RectangleObject>
 					</DataTemplate>

@@ -14,6 +14,11 @@ namespace BuildingMap.UI.Pages.ViewModel
 		private Color _selectedColor;
 		private bool _isSelected;
 
+		private string _text;
+		private int _fontSize = 12;
+		private Color _foregroundColor;
+		private RotationAngle _rotationAngle;
+
 		public MapItemViewModel(ClipboardManager clipboardManager)
 		{
 			_clipboardManager = clipboardManager;
@@ -65,6 +70,46 @@ namespace BuildingMap.UI.Pages.ViewModel
 			set
 			{
 				_isSelected = value;
+				OnPropertyChanged();
+			}
+		}
+
+		public string Text
+		{
+			get => _text;
+			set
+			{
+				_text = value;
+				OnPropertyChanged();
+			}
+		}
+
+		public int FontSize
+		{
+			get => _fontSize;
+			set
+			{
+				_fontSize = value;
+				OnPropertyChanged();
+			}
+		}
+
+		public Color ForegroundColor
+		{
+			get => _foregroundColor;
+			set
+			{
+				_foregroundColor = value;
+				OnPropertyChanged();
+			}
+		}
+
+		public RotationAngle RotationAngle
+		{
+			get => _rotationAngle;
+			set
+			{
+				_rotationAngle = value;
 				OnPropertyChanged();
 			}
 		}

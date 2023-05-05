@@ -13,7 +13,7 @@ namespace BuildingMap.UI.Components.View
 		public static readonly DependencyProperty SelectedColorProperty = DependencyPropertyEx.Register<Color, RectangleObject>(OnViewChanged);
 		public static readonly DependencyProperty SelectedProperty = DependencyPropertyEx.Register<bool, RectangleObject>(OnViewChanged);
 
-        private const int AuraSize = 4;
+		private const int AuraSize = 4;
 
         private readonly Rectangle _rectangle;
 

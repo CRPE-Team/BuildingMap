@@ -21,6 +21,7 @@ namespace BuildingMap.UI.Logics
 			var mapItem = _mapItemFactory();
 			mapItem.Color = Color.FromRgb(0x00, 0xD3, 0xEA);
 			mapItem.SelectedColor = Color.FromRgb(0x00, 0xF3, 0xEA);
+			mapItem.ForegroundColor = Color.FromRgb(0x00, 0x00, 0x00);
 
 			return mapItem;
 		}
