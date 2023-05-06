@@ -1,7 +1,7 @@
 ﻿using System.Windows;
 using Unity;
 
-namespace BuildingMap
+namespace BuildingMap.UI
 {
 	/// <summary>
 	/// Interaction logic for App.xaml
@@ -17,7 +17,7 @@ namespace BuildingMap
 
         protected override void OnStartup(StartupEventArgs e)
         {
-			Container.Resolve<UI.View.MainWindow>().Show();
+			Container.Resolve<Visual.MainWindow>().Show();
         }
 
         private IUnityContainer SetupContainer()
@@ -25,7 +25,7 @@ namespace BuildingMap
             Container = new UnityContainer();
             Container.RegisterInstance(this);
 
-            Container.AddNewExtension<UI.ContainerExtension>();
+            Container.AddNewExtension<Visual.ContainerExtension>();
 			Container.AddNewExtension<Logic.ContainerExtension>();
 
             return Container;

@@ -1,14 +1,13 @@
 ﻿using Unity;
 using Unity.Extension;
 
-namespace BuildingMap.UI.Logic
+namespace BuildingMap.UI.Visual.Utils
 {
 	public class ContainerExtension : UnityContainerExtension
 	{
 		protected override void Initialize()
 		{
-			Container.RegisterSingleton<SettingsManager>();
-			Container.RegisterSingleton<MapManager>();
+			Container.RegisterSingleton<ClipboardManager>();
 		}
 	}
 }

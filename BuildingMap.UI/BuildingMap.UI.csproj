@@ -13,13 +13,17 @@
   </ItemGroup>
 
   <ItemGroup>
-    <None Update="UI\Pages\Izuku-Midoriya-Изуку-Мидория-Моя-Геройская-Академия-арты-картинки-12.jpg">
+    <ProjectReference Include="..\BuildingMap.Core\BuildingMap.Core.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Update="Visual\Pages\Izuku-Midoriya-Изуку-Мидория-Моя-Геройская-Академия-арты-картинки-12.jpg">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
   </ItemGroup>
 
   <ItemGroup>
-    <Page Update="UI\MainWindow.xaml">
+    <Page Update="Visual\MainWindow.xaml">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Page>
   </ItemGroup>
