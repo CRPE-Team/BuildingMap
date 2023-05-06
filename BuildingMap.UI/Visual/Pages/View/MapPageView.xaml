@@ -36,17 +36,25 @@
 					<b:EventTrigger EventName="StopDraw">
 						<b:CallMethodAction TargetObject="{Binding}" MethodName="OnStopDraw"/>
 					</b:EventTrigger>
+					
+					<b:EventTrigger EventName="KeyUp" SourceObject="{Binding MainWindow, Source={x:Static Application.Current}}">
+						<b:CallMethodAction TargetObject="{Binding}" MethodName="OnKeyUp" />
+					</b:EventTrigger>
+					<b:EventTrigger EventName="MouseUp">
+						<b:CallMethodAction TargetObject="{Binding}" MethodName="OnMouseUp" />
+					</b:EventTrigger>
+					
 					<b:KeyTrigger Key="C" FiredOn="KeyDown" Modifiers="Ctrl">
 						<b:CallMethodAction TargetObject="{Binding}" MethodName="CopyElement" />
 					</b:KeyTrigger>
 					<b:KeyTrigger Key="V" FiredOn="KeyDown" Modifiers="Ctrl">
 						<b:CallMethodAction TargetObject="{Binding}" MethodName="InsertElement" />
 					</b:KeyTrigger>
-					<b:EventTrigger EventName="KeyUp" SourceObject="{Binding MainWindow, Source={x:Static Application.Current}}">
-						<b:CallMethodAction TargetObject="{Binding}" MethodName="OnKeyUp" />
-					</b:EventTrigger>
 					<b:KeyTrigger Key="Delete" FiredOn="KeyDown">
 						<b:CallMethodAction TargetObject="{Binding}" MethodName="DeleteElement" />
+					</b:KeyTrigger>
+					<b:KeyTrigger Key="Esc" FiredOn="KeyDown">
+						<b:CallMethodAction TargetObject="{Binding}" MethodName="Unselect" />
 					</b:KeyTrigger>
 				</b:Interaction.Triggers>
 

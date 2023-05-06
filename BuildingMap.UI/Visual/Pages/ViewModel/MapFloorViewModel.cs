@@ -98,7 +98,11 @@ namespace BuildingMap.UI.Visual.Pages.ViewModel
 				SelectedItem.IsSelected = false;
 			}
 
-			item.IsSelected = true;
+			if (item != null)
+			{
+				item.IsSelected = true;
+			}
+
 			SelectedItem = item;
 		}
 
@@ -106,7 +110,7 @@ namespace BuildingMap.UI.Visual.Pages.ViewModel
 		{
 			if (!DataContextHelper.TryGetDataContext<MapItemViewModel>(sender, out var item)) return;
 			if (DragManager.Moving) return;
-
+			
 			SelectItem(item);
 		}
 
@@ -151,6 +155,14 @@ namespace BuildingMap.UI.Visual.Pages.ViewModel
 		{
 			_singleKeyDownFlag = false;
 		}
+	
+		public void OnMouseUp(object sender, MouseButtonEventArgs args)
+		{
+			if (DragManager.WasMoving) return;
+			if (!DataContextHelper.TryGetDataContext(Mouse.DirectlyOver, out var dataContext) || dataContext != this) return;
+			
+			if (args.ChangedButton == MouseButton.Left) Unselect();
+		}
 
 		public void DeleteElement()
 		{
@@ -170,6 +182,11 @@ namespace BuildingMap.UI.Visual.Pages.ViewModel
 				var mapItemViewModel = _mapItemsFactory.Create(mapItem);
 				Items.Add(mapItemViewModel);
 			}
+		}
+
+		public void Unselect()
+		{
+			SelectItem(null);
 		}
 
 		private void OnSingleKeyDown(Action action)
