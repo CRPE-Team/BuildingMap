@@ -5,39 +5,28 @@ namespace BuildingMap.UI.Visual.Pages.ViewModel
 {
 	public class MapViewModel : ObservableObject
 	{
-		private readonly Func<MapFloorViewModel> _currentFloorFactory;
+		private readonly MapFloorViewModel _currentFloor;
 		private readonly MapManager _mapManager;
 		private readonly SettingsManager _settingsManager;
-		
-		private MapFloorViewModel _currentFloor;
 
 		public MapViewModel(
-			Func<MapFloorViewModel> currentFloor, 
+			MapFloorViewModel currentFloor, 
 			MapManager mapManager, 
 			SettingsManager settingsManager)
 		{
-			_currentFloorFactory = currentFloor;
+			_currentFloor = currentFloor;
 			_mapManager = mapManager;
 			_settingsManager = settingsManager;
 
+			mapManager.MapLoaded += (_, _) => UpdateFloor();
 			settingsManager.SelectedFloorChanged += (_, _) => UpdateFloor();
-
-			UpdateFloor();
 		}
 
-		public MapFloorViewModel CurrentFloor
-		{
-			get => _currentFloor;
-			set
-			{
-				_currentFloor = value;
-				OnPropertyChanged();
-			}
-		}
+		public MapFloorViewModel CurrentFloor => _currentFloor;
 
 		private void UpdateFloor()
 		{
-			CurrentFloor = _currentFloorFactory();
+			CurrentFloor.Update();
 		}
 	}
 }

@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Threading;
 using System.Windows.Media;
 using BuildingMap.Core;
 using BuildingMap.UI.Logic;

@@ -19,7 +19,7 @@ namespace BuildingMap.UI.Visual.Pages.ViewModel
 		private Color _background;
 		private double _zoom = 1;
 
-		private readonly Floor _floor;
+		private Floor _floor;
 
 		private readonly MapManager _mapManager;
 		private readonly SettingsManager _settingsManager;
@@ -37,12 +37,7 @@ namespace BuildingMap.UI.Visual.Pages.ViewModel
 
 			MapEditModeViewModel = editModeViewModel;
 
-			_floor = _mapManager.Map.Floors[_settingsManager.SelectedFloor];
-			foreach (var mapItem in _floor.MapItems.Values)
-			{
-				var mapItemViewModel = _mapItemsFactory.Create(mapItem);
-				Items.Add(mapItemViewModel);
-			}
+			Update();
 		}
 
 		public MapEditModeViewModel MapEditModeViewModel { get; }
@@ -134,7 +129,7 @@ namespace BuildingMap.UI.Visual.Pages.ViewModel
 
 		public void CopyElement()
 		{
-			SelectedItem.CopyToClipboard();
+			SelectedItem?.CopyToClipboard();
 		}
 
 		public void InsertElement()
@@ -152,6 +147,18 @@ namespace BuildingMap.UI.Visual.Pages.ViewModel
 
 			RemoveItem(SelectedItem);
 			SelectedItem = null;
+		}
+
+		public void Update()
+		{
+			Items.Clear();
+
+			_floor = _mapManager.Map.Floors[_settingsManager.SelectedFloor];
+			foreach (var mapItem in _floor.MapItems.Values)
+			{
+				var mapItemViewModel = _mapItemsFactory.Create(mapItem);
+				Items.Add(mapItemViewModel);
+			}
 		}
 
 		private void AddNewItem(MapItemViewModel viewModel)

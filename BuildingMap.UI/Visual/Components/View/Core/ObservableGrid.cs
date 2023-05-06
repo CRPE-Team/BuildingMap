@@ -47,7 +47,7 @@ namespace BuildingMap.UI.Visual.Components.View.Core
 				newValue.CollectionChanged += d.OnItemsSourceCollectionChanged;
 			}
 
-			if (e.OldValue is IList newList) d.Add(newList);
+			if (e.NewValue is IList newList) d.Add(newList);
 		}
 
 		private static void OnItemTemplateChanged(ObservableGrid d, DependencyPropertyChangedEventArgs e)

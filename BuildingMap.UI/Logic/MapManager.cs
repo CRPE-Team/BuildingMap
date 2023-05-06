@@ -20,7 +20,7 @@ namespace BuildingMap.UI.Logic
 			OnMapLoaded();
 		}
 
-		private void SetEmptyMap()
+		public void SetEmptyMap()
 		{
 			Map = new Map();
 			AddNewFloor();
