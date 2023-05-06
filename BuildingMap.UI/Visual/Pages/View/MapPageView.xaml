@@ -42,6 +42,9 @@
 					<b:KeyTrigger Key="V" FiredOn="KeyDown" Modifiers="Ctrl">
 						<b:CallMethodAction TargetObject="{Binding}" MethodName="InsertElement" />
 					</b:KeyTrigger>
+					<b:EventTrigger EventName="KeyUp" SourceObject="{Binding MainWindow, Source={x:Static Application.Current}}">
+						<b:CallMethodAction TargetObject="{Binding}" MethodName="OnKeyUp" />
+					</b:EventTrigger>
 					<b:KeyTrigger Key="Delete" FiredOn="KeyDown">
 						<b:CallMethodAction TargetObject="{Binding}" MethodName="DeleteElement" />
 					</b:KeyTrigger>

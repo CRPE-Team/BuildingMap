@@ -1,4 +1,5 @@
-﻿using System.Collections.ObjectModel;
+﻿using System;
+using System.Collections.ObjectModel;
 using System.Windows;
 using System.Windows.Input;
 using System.Windows.Media;
@@ -12,6 +13,8 @@ namespace BuildingMap.UI.Visual.Pages.ViewModel
 {
 	public class MapFloorViewModel : ObservableObject
 	{
+		private bool _singleKeyDownFlag;
+
 		private MapItemViewModel _drawingItem;
 
 		private int _gridSize = 5;
@@ -129,16 +132,24 @@ namespace BuildingMap.UI.Visual.Pages.ViewModel
 
 		public void CopyElement()
 		{
-			SelectedItem?.CopyToClipboard();
+			OnSingleKeyDown(() => SelectedItem?.CopyToClipboard());
 		}
 
 		public void InsertElement()
 		{	
-			if (!_mapItemsFactory.TryCreateCopyFromClipboard(out var copy)) return;
+			OnSingleKeyDown(() =>
+			{
+				if (!_mapItemsFactory.TryCreateCopyFromClipboard(out var copy)) return;
 
-			copy.Position = (MousePosition - copy.Size.ToVector() / 2).Floor().ToPoint();
+				copy.Position = (MousePosition - copy.Size.ToVector() / 2).Floor().ToPoint();
 
-			AddNewItem(copy);
+				AddNewItem(copy);
+			});
+		}
+
+		public void OnKeyUp()
+		{
+			_singleKeyDownFlag = false;
 		}
 
 		public void DeleteElement()
@@ -159,6 +170,15 @@ namespace BuildingMap.UI.Visual.Pages.ViewModel
 				var mapItemViewModel = _mapItemsFactory.Create(mapItem);
 				Items.Add(mapItemViewModel);
 			}
+		}
+
+		private void OnSingleKeyDown(Action action)
+		{
+			if (_singleKeyDownFlag) return;
+
+			action();
+
+			_singleKeyDownFlag = true;
 		}
 
 		private void AddNewItem(MapItemViewModel viewModel)
