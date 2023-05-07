@@ -1,18 +1,16 @@
 ﻿using System;
 using System.ComponentModel;
-using System.IO;
 using System.Windows;
 using System.Windows.Input;
 using System.Windows.Media;
-using System.Windows.Media.Imaging;
 using BuildingMap.UI.Visual.Utils;
 
 namespace BuildingMap.UI.Visual.Components.View
 {
-    public class BackgroundImage : BuildingGridItem
+	public class BackgroundImage : BuildingGridItem
 	{
 		public static readonly DependencyProperty ShowProperty = DependencyPropertyEx.Register<bool, BackgroundImage>(OnShowChanged);
-		public static readonly DependencyProperty ImageSourcePathProperty = DependencyPropertyEx.Register<string, BackgroundImage>(OnImageSourcePathChanged);
+		public static readonly DependencyProperty ImageSourceProperty = DependencyPropertyEx.Register<ImageSource, BackgroundImage>(OnImageSourceChanged);
 		public static readonly DependencyProperty ScaleProperty = DependencyPropertyEx.Register<double, BackgroundImage>(OnScaleChanged, ScaleCoerce, FrameworkPropertyMetadataOptions.BindsTwoWayByDefault);
 		
 		private ImageBrush _image;
@@ -23,7 +21,7 @@ namespace BuildingMap.UI.Visual.Components.View
 		public bool Show { get => (bool) GetValue(ShowProperty); set => SetValue(ShowProperty, value); }
 
 		[Bindable(true)]
-		public string ImageSourcePath { get => (string) GetValue(ImageSourcePathProperty); set => SetValue(ImageSourcePathProperty, value); }
+		public ImageSource ImageSource { get => (ImageSource) GetValue(ImageSourceProperty); set => SetValue(ImageSourceProperty, value); }
 
 		[Bindable(true)]
 		public double Scale { get => (double) GetValue(ScaleProperty); set => SetValue(ScaleProperty, value); }
@@ -69,9 +67,9 @@ namespace BuildingMap.UI.Visual.Components.View
 			d.Visibility = (bool) e.NewValue ? Visibility.Visible : Visibility.Hidden;
 		}
 
-		private static void OnImageSourcePathChanged(BackgroundImage d, DependencyPropertyChangedEventArgs e)
+		private static void OnImageSourceChanged(BackgroundImage d, DependencyPropertyChangedEventArgs e)
 		{
-			d.UpdateImage((string) e.OldValue, (string) e.NewValue);
+			d.UpdateImage((ImageSource) e.NewValue);
 		}
 
 		private static object ScaleCoerce(BackgroundImage d, double scale)
@@ -85,18 +83,9 @@ namespace BuildingMap.UI.Visual.Components.View
 			if (d.Grid != null) d.Update();
 		}
 
-		private void UpdateImage(string oldPath, string path)
+		private void UpdateImage(ImageSource ImageSource)
         {
-			if (path == null && oldPath == null) return; 
-
-            if (!File.Exists(path))
-            {
-				ImageSourcePath = null;
-                _image.ImageSource = null;
-                return;
-            }
-
-            _image.ImageSource = new BitmapImage(new Uri(ImageSourcePath, UriKind.RelativeOrAbsolute));
+            _image.ImageSource = ImageSource;
         }
     }
 }

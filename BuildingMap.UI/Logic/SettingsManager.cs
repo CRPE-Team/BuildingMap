@@ -10,10 +10,10 @@ namespace BuildingMap.UI.Logic
 		{
 			_mapManager = mapManager;
 
-			mapManager.FloorAdded += (_, _) => SelectFloor(mapManager.Map.Floors.Count - 1);
+			mapManager.FloorsChanged += (_, _) => SelectFloor(mapManager.Map.Floors.Count);
 		}
 
-		public int SelectedFloor { get; private set; }
+		public int SelectedFloor { get; private set; } = 1;
 
 		public event EventHandler SelectedFloorChanged;
 

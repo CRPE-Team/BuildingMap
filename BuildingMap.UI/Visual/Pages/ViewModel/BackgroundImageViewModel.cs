@@ -1,5 +1,8 @@
-﻿using System.Windows;
+﻿using System.IO;
+using BuildingMap.Core;
+using BuildingMap.UI.Logic;
 using Microsoft.Win32;
+using Point = System.Windows.Point;
 
 namespace BuildingMap.UI.Visual.Pages.ViewModel
 {
@@ -10,6 +13,8 @@ namespace BuildingMap.UI.Visual.Pages.ViewModel
 		private double _scale = 0.4;
 		private bool _show;
 
+		public Floor _currentFloor;
+
 		public BackgroundImageViewModel()
 		{
 			SelectBackgroundImageCommand = new RelayCommand(SelectBackgroundImage);
@@ -19,44 +24,64 @@ namespace BuildingMap.UI.Visual.Pages.ViewModel
 		public RelayCommand SelectBackgroundImageCommand { get; }
 		public RelayCommand RemoveBackgroundImageCommand { get; }
 
-		public string Path
+		public bool HasImage => ImageData != null;
+
+		public byte[] ImageData
 		{
-			get => _path;
+			get => _currentFloor.ImageInfo?.Data;
 			set
 			{
-				_path = value;
+				if (_currentFloor.ImageInfo == null)
+				{
+					_currentFloor.ImageInfo = new ImageInfo();
+					Scale = 0.4;
+				}
+
+				_currentFloor.ImageInfo.Data = value;
 				OnPropertyChanged();
+				OnPropertyChanged(nameof(HasImage));
 			}
 		}
 
 		public Point Position
 		{
-			get => _position;
+			get => _currentFloor.ImageInfo?.Position.ToPoint() ?? default;
 			set
 			{
-				_position = value;
+				if (_currentFloor.ImageInfo == null) return;
+
+				_currentFloor.ImageInfo.Position = value.ToNumerics();
 				OnPropertyChanged();
 			}
 		}
 
 		public double Scale
 		{
-			get => _scale;
+			get => _currentFloor.ImageInfo?.Scale ?? default;
 			set
 			{
-				_scale = value;
+				if (_currentFloor.ImageInfo == null) return;
+
+				_currentFloor.ImageInfo.Scale = value;
 				OnPropertyChanged();
 			}
 		}
 
 		public bool Show
 		{
-			get => _show;
+			get => _currentFloor.ImageInfo?.Show ?? default;
 			set
 			{
-				_show = value;
+				if (_currentFloor.ImageInfo == null) return;
+
+				_currentFloor.ImageInfo.Show = value;
 				OnPropertyChanged();
 			}
+		}
+
+		public void Initialize(Floor floor)
+		{
+			_currentFloor = floor;
 		}
 
 		private void SelectBackgroundImage()
@@ -66,12 +91,12 @@ namespace BuildingMap.UI.Visual.Pages.ViewModel
 
 			if (!result.Value) return;
 
-			Path = openFileDialog.FileName;
+			ImageData = File.ReadAllBytes(openFileDialog.FileName);
 		}
 
 		private void RemoveBackgroundImage()
 		{
-			Path = null;
+			ImageData = null;
 		}
 	}
 }

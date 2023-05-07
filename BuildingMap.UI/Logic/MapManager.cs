@@ -13,7 +13,7 @@ namespace BuildingMap.UI.Logic
 		public Map Map { get; private set; }
 
 		public event EventHandler MapLoaded;
-		public event EventHandler FloorAdded;
+		public event EventHandler FloorsChanged;
 
 		public void LoadMap()
 		{
@@ -24,6 +24,11 @@ namespace BuildingMap.UI.Logic
 		{
 			Map = new Map();
 			AddNewFloor();
+			//test
+			AddNewFloor();
+			AddNewFloor();
+			AddNewFloor();
+			//test
 
 			OnMapLoaded();
 		}
@@ -31,7 +36,7 @@ namespace BuildingMap.UI.Logic
 		private void AddNewFloor()
 		{
 			Map.Floors.Add(new Floor() { Number = Map.Floors.Count + 1 } );
-			FloorAdded?.Invoke(this, new EventArgs());
+			FloorsChanged?.Invoke(this, new EventArgs());
 		}
 
 		private void OnMapLoaded()

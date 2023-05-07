@@ -8,6 +8,6 @@ namespace BuildingMap.Core
 
 		public Dictionary<int, MapItem> MapItems { get; set; } = new Dictionary<int, MapItem>();
 
-		public string ImagePath { get; set; }
+		public ImageInfo ImageInfo { get; set; }
 	}
 }

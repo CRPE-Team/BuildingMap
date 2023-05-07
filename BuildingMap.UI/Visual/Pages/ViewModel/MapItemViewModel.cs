@@ -1,22 +1,36 @@
-﻿using System.Windows;
+﻿using System.Collections.Generic;
+using System.IO;
+using System.Windows;
 using System.Windows.Media;
 using BuildingMap.Core;
+using BuildingMap.UI.Logic;
 using BuildingMap.UI.Visual.Utils;
+using Microsoft.Win32;
 
 namespace BuildingMap.UI.Visual.Pages.ViewModel
 {
 	public class MapItemViewModel : ObservableObject
 	{
+		private readonly MapManager _mapManager;
 		private readonly ClipboardManager _clipboardManager;
 
 		private bool _isSelected;
 
-		public MapItemViewModel(ClipboardManager clipboardManager)
+		public MapItemViewModel(MapManager mapManager, ClipboardManager clipboardManager)
 		{
+			_mapManager = mapManager;
 			_clipboardManager = clipboardManager;
+
+			AddImageCommand = new RelayCommand(AddImage);
+			RemoveImageCommand = new RelayCommand(RemoveImage);
 		}
 
+		public RelayCommand AddImageCommand { get; set; }
+		public RelayCommand RemoveImageCommand { get; set; }
+
 		public MapItem MapItem { get; private set; }
+
+		public bool HasImage => ImageData != null;
 
 		public Point Position
 		{
@@ -121,13 +135,29 @@ namespace BuildingMap.UI.Visual.Pages.ViewModel
 			}
 		}
 
-		public string ImageSource
+		public byte[] ImageData
 		{
-			get => MapItem.ImageSource;
+			get
+			{
+				return MapItem.ImageId == null ? null : _mapManager.Map.ImagesData.GetValueOrDefault(MapItem.ImageId);
+			}
 			set
 			{
-				MapItem.ImageSource = value;
+				if (value == null)
+				{
+					if (MapItem.ImageId != null)
+					{
+						_mapManager.Map.RemoveImage(MapItem.ImageId);
+						MapItem.ImageId = null;
+					}	
+				}
+				else
+				{
+					MapItem.ImageId = _mapManager.Map.AddNewImage(value);
+				}
+				
 				OnPropertyChanged();
+				OnPropertyChanged(nameof(HasImage));
 			}
 		}
 
@@ -149,6 +179,21 @@ namespace BuildingMap.UI.Visual.Pages.ViewModel
 		public void CopyToClipboard()
 		{
 			_clipboardManager.SetData(MapItem);
+		}
+
+		private void AddImage()
+		{
+			var openFileDialog = new OpenFileDialog();
+			var result = openFileDialog.ShowDialog();
+
+			if (!result.Value) return;
+
+			ImageData = File.ReadAllBytes(openFileDialog.FileName);
+		}
+
+		private void RemoveImage()
+		{
+			ImageData = null;
 		}
 	}
 }

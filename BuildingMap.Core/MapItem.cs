@@ -7,8 +7,6 @@ namespace BuildingMap.Core
 	public class MapItem : ICloneable
     {
 		public int Id { get; set; }
-		
-		public string ImagePath { get; set; }
 
 		public Vector2 Position { get; set; }
 
@@ -28,7 +26,7 @@ namespace BuildingMap.Core
 
 		public RotationAngle RotationAngle { get; set; }
 
-		public string ImageSource { get; set; }
+		public string ImageId { get; set; }
 
 		public double ImageScale { get; set; }
 

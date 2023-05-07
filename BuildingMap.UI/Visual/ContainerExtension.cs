@@ -9,6 +9,7 @@ namespace BuildingMap.UI.Visual
 		{
 			Container.RegisterType<MainWindow>(TypeLifetime.Transient);
 
+			Container.AddNewExtension<Components.ContainerExtension>();
 			Container.AddNewExtension<Pages.ContainerExtension>();
 			Container.AddNewExtension<Logics.ContainerExtension>();
 			Container.AddNewExtension<Utils.ContainerExtension>();

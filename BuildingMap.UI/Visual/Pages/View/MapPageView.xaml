@@ -17,11 +17,13 @@
 		<utils:BooleanOrLogicalConverter x:Key="booleanOrLogicalConverter"/>
 		<utils:ColorToBrushConverter x:Key="colorToBrushConverter" />
 		<utils:RotationAngleConverter x:Key="rotationAngleConverter" />
+		<BooleanToVisibilityConverter x:Key="boolToVisibilityConverter" />
 	</Page.Resources>
 	
 	<Grid>
         <components.core:DragGrid>
 			<components:BuildingGrid 
+				x:Name="buildingGrid"
 				DataContext="{Binding CurrentFloor}"
 				ItemsSource="{Binding Items}" 
 				AllowEdit="{Binding MapEditModeViewModel.AllowEdit, Mode=TwoWay}" 
@@ -43,12 +45,18 @@
 					<b:EventTrigger EventName="MouseUp">
 						<b:CallMethodAction TargetObject="{Binding}" MethodName="OnMouseUp" />
 					</b:EventTrigger>
+					<b:EventTrigger EventName="ContextMenuOpening">
+						<b:CallMethodAction TargetObject="{Binding}" MethodName="OnContextMenuOpening" />
+					</b:EventTrigger>
 					
 					<b:KeyTrigger Key="C" FiredOn="KeyDown" Modifiers="Ctrl">
 						<b:CallMethodAction TargetObject="{Binding}" MethodName="CopyElement" />
 					</b:KeyTrigger>
 					<b:KeyTrigger Key="V" FiredOn="KeyDown" Modifiers="Ctrl">
 						<b:CallMethodAction TargetObject="{Binding}" MethodName="InsertElement" />
+					</b:KeyTrigger>
+					<b:KeyTrigger Key="E" FiredOn="KeyDown" Modifiers="Ctrl">
+						<b:CallMethodAction TargetObject="{Binding MapEditModeViewModel}" MethodName="ChangeAllowEdit" />
 					</b:KeyTrigger>
 					<b:KeyTrigger Key="Delete" FiredOn="KeyDown">
 						<b:CallMethodAction TargetObject="{Binding}" MethodName="DeleteElement" />
@@ -60,8 +68,15 @@
 
 				<components:BuildingGrid.ContextMenu>
 					<ContextMenu>
-						<MenuItem Header="Select background image" Command="{Binding MapEditModeViewModel.BackgroundImageViewModel.SelectBackgroundImageCommand}" />
-						<MenuItem Header="Remove background image" Command="{Binding MapEditModeViewModel.BackgroundImageViewModel.RemoveBackgroundImageCommand}" />
+						<MenuItem 
+							Header="Select background image" 
+							DataContext="{Binding MapEditModeViewModel}" 
+							Command="{Binding BackgroundImageViewModel.SelectBackgroundImageCommand}" />
+						<MenuItem 
+							Header="Remove background image" 
+							DataContext="{Binding MapEditModeViewModel}" 
+							IsEnabled="{Binding BackgroundImageViewModel.HasImage}" 
+							Command="{Binding BackgroundImageViewModel.RemoveBackgroundImageCommand}" />
 					</ContextMenu>
 				</components:BuildingGrid.ContextMenu>
 
@@ -76,7 +91,7 @@
 					<components:BackgroundImage DataContext="{Binding MapEditModeViewModel}"
 												Position="{Binding BackgroundImageViewModel.Position}"
 												Scale="{Binding BackgroundImageViewModel.Scale}" 
-												ImageSourcePath="{Binding BackgroundImageViewModel.Path}">
+												ImageSource="{Binding BackgroundImageViewModel.ImageData}">
 						<components:BackgroundImage.Show>
 							<MultiBinding Converter="{StaticResource booleanOrLogicalConverter}">
 								<Binding Path="AllowEdit"/>
@@ -98,14 +113,24 @@
 
 							<b:Interaction.Triggers>
 								<b:EventTrigger EventName="MouseUp">
-									<b:CallMethodAction TargetObject="{Binding DataContext, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type components:BuildingGrid}}}" MethodName="OnClickItem" />
+									<b:CallMethodAction TargetObject="{Binding DataContext, Source={x:Reference Name=buildingGrid}}" MethodName="OnClickItem" />
 								</b:EventTrigger>
 							</b:Interaction.Triggers>
 
-							<Image 
+							<components:RectangleObject.ContextMenu>
+								<ContextMenu>
+									<MenuItem Header="Add image on element" Command="{Binding AddImageCommand}" />
+									<MenuItem 
+										Header="Remove image from element" 
+										IsEnabled="{Binding HasImage}" 
+										Command="{Binding RemoveImageCommand}" />
+								</ContextMenu>
+							</components:RectangleObject.ContextMenu>
+
+							<Image
 								RenderTransformOrigin="0.5 0.5" 
 								Margin="{Binding Source={x:Static components:RectangleObject.AuraSize}}"
-								Source="{Binding ImageSource}">
+								Source="{Binding ImageData}">
 								<Image.RenderTransform>
 									<ScaleTransform ScaleX="{Binding ImageScale}" ScaleY="{Binding ImageScale}" />
 								</Image.RenderTransform>
@@ -130,5 +155,6 @@
 				
 			</components:BuildingGrid>
         </components.core:DragGrid>
-    </Grid>
+		<components:FloorSelectorView DataContext="{Binding FloorSelector}" />
+	</Grid>
 </Page>

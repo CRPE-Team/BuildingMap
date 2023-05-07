@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.ObjectModel;
 using System.Windows;
+using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media;
 using BuildingMap.Core;
@@ -176,7 +177,7 @@ namespace BuildingMap.UI.Visual.Pages.ViewModel
 		{
 			Items.Clear();
 
-			_floor = _mapManager.Map.Floors[_settingsManager.SelectedFloor];
+			_floor = _mapManager.Map.GetFloorByNumber(_settingsManager.SelectedFloor);
 			foreach (var mapItem in _floor.MapItems.Values)
 			{
 				var mapItemViewModel = _mapItemsFactory.Create(mapItem);
@@ -187,6 +188,11 @@ namespace BuildingMap.UI.Visual.Pages.ViewModel
 		public void Unselect()
 		{
 			SelectItem(null);
+		}
+
+		public void OnContextMenuOpening(object sender, ContextMenuEventArgs args)
+		{
+			args.Handled = !MapEditModeViewModel.AllowEdit;
 		}
 
 		private void OnSingleKeyDown(Action action)
