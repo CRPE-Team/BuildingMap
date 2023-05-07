@@ -8,21 +8,16 @@ namespace BuildingMap.UI.Visual.Pages.ViewModel
 {
 	public class BackgroundImageViewModel : ObservableObject
 	{
-		private string _path;
-		private Point _position;
-		private double _scale = 0.4;
-		private bool _show;
-
 		public Floor _currentFloor;
 
 		public BackgroundImageViewModel()
 		{
-			SelectBackgroundImageCommand = new RelayCommand(SelectBackgroundImage);
-			RemoveBackgroundImageCommand = new RelayCommand(RemoveBackgroundImage);
+			SelectImageCommand = new RelayCommand(SelectImage);
+			RemoveImageCommand = new RelayCommand(RemoveImage);
 		}
 
-		public RelayCommand SelectBackgroundImageCommand { get; }
-		public RelayCommand RemoveBackgroundImageCommand { get; }
+		public RelayCommand SelectImageCommand { get; }
+		public RelayCommand RemoveImageCommand { get; }
 
 		public bool HasImage => ImageData != null;
 
@@ -84,7 +79,7 @@ namespace BuildingMap.UI.Visual.Pages.ViewModel
 			_currentFloor = floor;
 		}
 
-		private void SelectBackgroundImage()
+		private void SelectImage()
 		{
 			var openFileDialog = new OpenFileDialog();
 			var result = openFileDialog.ShowDialog();
@@ -94,7 +89,7 @@ namespace BuildingMap.UI.Visual.Pages.ViewModel
 			ImageData = File.ReadAllBytes(openFileDialog.FileName);
 		}
 
-		private void RemoveBackgroundImage()
+		private void RemoveImage()
 		{
 			ImageData = null;
 		}

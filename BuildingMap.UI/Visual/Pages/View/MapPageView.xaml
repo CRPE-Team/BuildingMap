@@ -70,13 +70,19 @@
 					<ContextMenu>
 						<MenuItem 
 							Header="Select background image" 
-							DataContext="{Binding MapEditModeViewModel}" 
-							Command="{Binding BackgroundImageViewModel.SelectBackgroundImageCommand}" />
+							DataContext="{Binding MapEditModeViewModel.BackgroundImageViewModel}" 
+							Command="{Binding SelectImageCommand}" />
 						<MenuItem 
 							Header="Remove background image" 
-							DataContext="{Binding MapEditModeViewModel}" 
-							IsEnabled="{Binding BackgroundImageViewModel.HasImage}" 
-							Command="{Binding BackgroundImageViewModel.RemoveBackgroundImageCommand}" />
+							DataContext="{Binding MapEditModeViewModel.BackgroundImageViewModel}" 
+							IsEnabled="{Binding HasImage}" 
+							Command="{Binding RemoveImageCommand}" />
+						<MenuItem 
+							Header="Always show background image" 
+							DataContext="{Binding MapEditModeViewModel.BackgroundImageViewModel}" 
+							IsCheckable="True"
+							IsChecked="{Binding Show}"
+							IsEnabled="{Binding HasImage}" />
 					</ContextMenu>
 				</components:BuildingGrid.ContextMenu>
 
