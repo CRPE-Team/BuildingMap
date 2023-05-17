@@ -46,6 +46,11 @@ namespace BuildingMap.UI.Visual.Logics
 			return viewModel;
 		}
 
+		public bool CanCreateCopyFromClipboard()
+		{
+			return _clipboardManager.HasData<MapItem>();
+		}
+
 		public bool TryCreateCopyFromClipboard(out MapItemViewModel copy)
 		{
 			_clipboardManager.TryGetData<MapItem>(out var cache);

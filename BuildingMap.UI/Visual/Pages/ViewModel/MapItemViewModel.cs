@@ -22,11 +22,13 @@ namespace BuildingMap.UI.Visual.Pages.ViewModel
 			_clipboardManager = clipboardManager;
 
 			AddImageCommand = new RelayCommand(AddImage);
-			RemoveImageCommand = new RelayCommand(RemoveImage);
+			RemoveImageCommand = new RelayCommand(RemoveImage, () => HasImage);
+			CopyCommand = new RelayCommand(CopyToClipboard);
 		}
 
 		public RelayCommand AddImageCommand { get; set; }
 		public RelayCommand RemoveImageCommand { get; set; }
+		public RelayCommand CopyCommand { get; set; }
 
 		public MapItem MapItem { get; private set; }
 

@@ -15,6 +15,11 @@
 			return data != null;
 		}
 
+		public bool HasData<T>()
+		{
+			return _cache is T;
+		}
+
 		public bool TryGetData<T>(out T data)
 		{ 
 			if (!TryGetData(out object cachedData) || cachedData is not T tData)
