@@ -4,11 +4,12 @@
       xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
       xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
       xmlns:b="http://schemas.microsoft.com/xaml/behaviors"
+	  xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit"
       xmlns:components.core="clr-namespace:BuildingMap.UI.Visual.Components.View.Core"
       xmlns:components="clr-namespace:BuildingMap.UI.Visual.Components.View"
       xmlns:viewModel="clr-namespace:BuildingMap.UI.Visual.Pages.ViewModel"
       xmlns:utils="clr-namespace:BuildingMap.UI.Visual.Utils"
-      mc:Ignorable="d"
+	  mc:Ignorable="d"
       d:DataContext="{d:DesignInstance viewModel:MapViewModel}"
       d:DesignHeight="450" d:DesignWidth="800"
       Title="MapPage">
@@ -19,9 +20,9 @@
 		<utils:RotationAngleConverter x:Key="rotationAngleConverter" />
 		<BooleanToVisibilityConverter x:Key="boolToVisibilityConverter" />
 	</Page.Resources>
-	
+
 	<Grid>
-        <components.core:DragGrid>
+		<components.core:DragGrid>
 			<components:BuildingGrid 
 				x:Name="buildingGrid"
 				DataContext="{Binding CurrentFloor}"
@@ -30,7 +31,7 @@
 				Offset="{Binding Offset}" 
 				Zoom="{Binding Zoom}"
 				MousePosition="{Binding MousePosition}">
-				
+
 				<b:Interaction.Triggers>
 					<b:EventTrigger EventName="StartDraw">
 						<b:CallMethodAction TargetObject="{Binding}" MethodName="OnStartDraw"/>
@@ -38,7 +39,7 @@
 					<b:EventTrigger EventName="StopDraw">
 						<b:CallMethodAction TargetObject="{Binding}" MethodName="OnStopDraw"/>
 					</b:EventTrigger>
-					
+
 					<b:EventTrigger EventName="KeyUp" SourceObject="{Binding MainWindow, Source={x:Static Application.Current}}">
 						<b:CallMethodAction TargetObject="{Binding}" MethodName="OnKeyUp" />
 					</b:EventTrigger>
@@ -48,7 +49,7 @@
 					<b:EventTrigger EventName="ContextMenuOpening">
 						<b:CallMethodAction TargetObject="{Binding}" MethodName="OnContextMenuOpening" />
 					</b:EventTrigger>
-					
+
 					<b:KeyTrigger Key="C" FiredOn="KeyDown" Modifiers="Ctrl">
 						<b:CallMethodAction TargetObject="{Binding}" MethodName="CopyElement" />
 					</b:KeyTrigger>
@@ -83,6 +84,14 @@
 							IsCheckable="True"
 							IsChecked="{Binding Show}"
 							IsEnabled="{Binding HasImage}" />
+						<MenuItem>
+							<MenuItem.Header>
+								<StackPanel Orientation="Horizontal">
+									<Label Content="Background color: " />
+									<xctk:ColorPicker Width="25" SelectedColor="{Binding Background}" DisplayColorAndName="False" AvailableColorsSortingMode="HueSaturationBrightness" ShowDropDownButton="False" />
+								</StackPanel>
+							</MenuItem.Header>
+						</MenuItem>
 					</ContextMenu>
 				</components:BuildingGrid.ContextMenu>
 
@@ -91,7 +100,7 @@
 						BackgroundColor="{Binding Background}" 
 						Show="{Binding MapEditModeViewModel.AllowEdit}" 
 						GridSize="{Binding GridSize}"/>
-                </components:BuildingGrid.Grid>
+				</components:BuildingGrid.Grid>
 
 				<components:BuildingGrid.BackgroundImage>
 					<components:BackgroundImage DataContext="{Binding MapEditModeViewModel}"
@@ -130,6 +139,16 @@
 										Header="Remove image from element" 
 										IsEnabled="{Binding HasImage}" 
 										Command="{Binding RemoveImageCommand}" />
+									<MenuItem>
+										<MenuItem.Header>
+											<StackPanel Orientation="Horizontal">
+												<Label Content="Color: " />
+												<xctk:ColorPicker TabIndex="1" ShowStandardColors="False" ShowAvailableColors="False" StandardTabHeader="{x:Null}" Width="25" SelectedColor="{Binding Color}" DisplayColorAndName="False" AvailableColorsSortingMode="HueSaturationBrightness" ShowDropDownButton="False" />
+												<xctk:ColorPicker TabIndex="1" ShowStandardColors="False" ShowAvailableColors="False" StandardTabHeader="{x:Null}" Width="25" SelectedColor="{Binding SelectedColor}" DisplayColorAndName="False" AvailableColorsSortingMode="HueSaturationBrightness" ShowDropDownButton="False" />
+											</StackPanel>
+										</MenuItem.Header>
+									</MenuItem>
+
 								</ContextMenu>
 							</components:RectangleObject.ContextMenu>
 
@@ -158,9 +177,9 @@
 						</components:RectangleObject>
 					</DataTemplate>
 				</components:BuildingGrid.ItemTemplate>
-				
+
 			</components:BuildingGrid>
-        </components.core:DragGrid>
+		</components.core:DragGrid>
 		<components:FloorSelectorView DataContext="{Binding FloorSelector}" />
 	</Grid>
 </Page>

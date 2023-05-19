@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Drawing;
 
 namespace BuildingMap.Core
 {
@@ -9,5 +10,7 @@ namespace BuildingMap.Core
 		public Dictionary<int, MapItem> MapItems { get; set; } = new Dictionary<int, MapItem>();
 
 		public ImageInfo ImageInfo { get; set; }
+
+		public Color BackgroundColor { get; set; }
 	}
 }

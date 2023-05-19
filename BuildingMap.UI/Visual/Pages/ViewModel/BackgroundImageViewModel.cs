@@ -1,6 +1,5 @@
 ﻿using System.IO;
 using BuildingMap.Core;
-using BuildingMap.UI.Logic;
 using Microsoft.Win32;
 using Point = System.Windows.Point;
 

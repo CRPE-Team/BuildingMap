@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.IO;
 using System.Windows;
 using System.Windows.Media;
@@ -6,6 +7,7 @@ using BuildingMap.Core;
 using BuildingMap.UI.Logic;
 using BuildingMap.UI.Visual.Utils;
 using Microsoft.Win32;
+using Xceed.Wpf.Toolkit;
 
 namespace BuildingMap.UI.Visual.Pages.ViewModel
 {
@@ -31,6 +33,8 @@ namespace BuildingMap.UI.Visual.Pages.ViewModel
 		public MapItem MapItem { get; private set; }
 
 		public bool HasImage => ImageData != null;
+
+		public ObservableCollection<ColorItem> AvailableColors { get; } = new();
 
 		public Point Position
 		{

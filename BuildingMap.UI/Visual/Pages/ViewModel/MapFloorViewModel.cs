@@ -72,10 +72,10 @@ namespace BuildingMap.UI.Visual.Pages.ViewModel
 
 		public Color Background
 		{
-			get => _background;
+			get => _floor.BackgroundColor.ToWindows();
 			set
 			{
-				_background = value;
+				_floor.BackgroundColor = value.ToDrawing();
 				OnPropertyChanged();
 			}
 		}
