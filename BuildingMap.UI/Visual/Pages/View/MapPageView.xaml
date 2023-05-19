@@ -76,7 +76,6 @@
 						<MenuItem 
 							Header="Remove background image" 
 							DataContext="{Binding MapEditModeViewModel.BackgroundImageViewModel}" 
-							IsEnabled="{Binding HasImage}" 
 							Command="{Binding RemoveImageCommand}" />
 						<MenuItem 
 							Header="Always show background image" 
@@ -84,6 +83,10 @@
 							IsCheckable="True"
 							IsChecked="{Binding Show}"
 							IsEnabled="{Binding HasImage}" />
+						<MenuItem 
+							Header="Paste" 
+							Command="{Binding SelectImageCommand}"
+							InputGestureText="Ctrl + V" />
 						<MenuItem>
 							<MenuItem.Header>
 								<StackPanel Orientation="Horizontal">
@@ -135,6 +138,8 @@
 							<components:RectangleObject.ContextMenu>
 								<ContextMenu>
 									<MenuItem Header="Add image on element" Command="{Binding AddImageCommand}" />
+									<MenuItem Header="Remove image from element" Command="{Binding RemoveImageCommand}" />
+									<MenuItem Header="Copy" Command="{Binding CopyCommand}" InputGestureText="Ctrl + C" />
 									<MenuItem 
 										Header="Remove image from element" 
 										IsEnabled="{Binding HasImage}" 

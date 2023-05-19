@@ -12,7 +12,7 @@ namespace BuildingMap.UI.Visual.Pages.ViewModel
 		public BackgroundImageViewModel()
 		{
 			SelectImageCommand = new RelayCommand(SelectImage);
-			RemoveImageCommand = new RelayCommand(RemoveImage);
+			RemoveImageCommand = new RelayCommand(RemoveImage, () => HasImage);
 		}
 
 		public RelayCommand SelectImageCommand { get; }

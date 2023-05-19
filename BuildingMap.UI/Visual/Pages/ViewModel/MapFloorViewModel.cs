@@ -41,8 +41,12 @@ namespace BuildingMap.UI.Visual.Pages.ViewModel
 
 			MapEditModeViewModel = editModeViewModel;
 
+			SelectImageCommand = new RelayCommand(InsertElementImpl, CanInsertElement);
+
 			Update();
 		}
+
+		public RelayCommand SelectImageCommand { get; }
 
 		public MapEditModeViewModel MapEditModeViewModel { get; }
 
@@ -142,14 +146,7 @@ namespace BuildingMap.UI.Visual.Pages.ViewModel
 
 		public void InsertElement()
 		{	
-			OnSingleKeyDown(() =>
-			{
-				if (!_mapItemsFactory.TryCreateCopyFromClipboard(out var copy)) return;
-
-				copy.Position = (MousePosition - copy.Size.ToVector() / 2).Floor().ToPoint();
-
-				AddNewItem(copy);
-			});
+			OnSingleKeyDown(InsertElementImpl);
 		}
 
 		public void OnKeyUp()
@@ -193,6 +190,20 @@ namespace BuildingMap.UI.Visual.Pages.ViewModel
 		public void OnContextMenuOpening(object sender, ContextMenuEventArgs args)
 		{
 			args.Handled = !MapEditModeViewModel.AllowEdit;
+		}
+
+		private bool CanInsertElement()
+		{
+			return _mapItemsFactory.CanCreateCopyFromClipboard();
+		}
+
+		private void InsertElementImpl()
+		{
+			if (!_mapItemsFactory.TryCreateCopyFromClipboard(out var copy)) return;
+
+			copy.Position = (MousePosition - copy.Size.ToVector() / 2).Floor().ToPoint();
+
+			AddNewItem(copy);
 		}
 
 		private void OnSingleKeyDown(Action action)
