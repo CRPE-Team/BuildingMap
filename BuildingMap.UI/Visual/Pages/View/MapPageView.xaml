@@ -26,6 +26,7 @@
 			<components:BuildingGrid 
 				x:Name="buildingGrid"
 				DataContext="{Binding CurrentFloor}"
+				Background="{Binding Background, Converter={StaticResource colorToBrushConverter}}"
 				ItemsSource="{Binding Items}" 
 				AllowEdit="{Binding MapEditModeViewModel.AllowEdit, Mode=TwoWay}" 
 				Offset="{Binding Offset}" 
@@ -80,27 +81,25 @@
 						<MenuItem 
 							Header="Always show background image" 
 							DataContext="{Binding MapEditModeViewModel.BackgroundImageViewModel}" 
+							StaysOpenOnClick="True"
 							IsCheckable="True"
 							IsChecked="{Binding Show}"
 							IsEnabled="{Binding HasImage}" />
-						<MenuItem 
-							Header="Paste" 
-							Command="{Binding SelectImageCommand}"
-							InputGestureText="Ctrl + V" />
-						<MenuItem>
+						<MenuItem StaysOpenOnClick="True" InputGestureText="Background color">
 							<MenuItem.Header>
-								<StackPanel Orientation="Horizontal">
-									<Label Content="Background color: " />
-									<xctk:ColorPicker Width="25" SelectedColor="{Binding Background}" DisplayColorAndName="False" AvailableColorsSortingMode="HueSaturationBrightness" ShowDropDownButton="False" />
-								</StackPanel>
+								<xctk:ColorPicker Width="45" ShowTabHeaders="False" ColorMode="ColorCanvas" SelectedColor="{Binding Background}" DisplayColorAndName="False" ShowDropDownButton="False" />
 							</MenuItem.Header>
 						</MenuItem>
+						<Separator />
+						<MenuItem 
+							Header="Paste" 
+							Command="{Binding PasteElementCommand}"
+							InputGestureText="Ctrl + V" />
 					</ContextMenu>
 				</components:BuildingGrid.ContextMenu>
 
 				<components:BuildingGrid.Grid>
 					<components:BackgroundGrid 
-						BackgroundColor="{Binding Background}" 
 						Show="{Binding MapEditModeViewModel.AllowEdit}" 
 						GridSize="{Binding GridSize}"/>
 				</components:BuildingGrid.Grid>
@@ -139,21 +138,20 @@
 								<ContextMenu>
 									<MenuItem Header="Add image on element" Command="{Binding AddImageCommand}" />
 									<MenuItem Header="Remove image from element" Command="{Binding RemoveImageCommand}" />
-									<MenuItem Header="Copy" Command="{Binding CopyCommand}" InputGestureText="Ctrl + C" />
-									<MenuItem 
-										Header="Remove image from element" 
-										IsEnabled="{Binding HasImage}" 
-										Command="{Binding RemoveImageCommand}" />
-									<MenuItem>
-										<MenuItem.Header>
-											<StackPanel Orientation="Horizontal">
-												<Label Content="Color: " />
-												<xctk:ColorPicker TabIndex="1" ShowStandardColors="False" ShowAvailableColors="False" StandardTabHeader="{x:Null}" Width="25" SelectedColor="{Binding Color}" DisplayColorAndName="False" AvailableColorsSortingMode="HueSaturationBrightness" ShowDropDownButton="False" />
-												<xctk:ColorPicker TabIndex="1" ShowStandardColors="False" ShowAvailableColors="False" StandardTabHeader="{x:Null}" Width="25" SelectedColor="{Binding SelectedColor}" DisplayColorAndName="False" AvailableColorsSortingMode="HueSaturationBrightness" ShowDropDownButton="False" />
-											</StackPanel>
-										</MenuItem.Header>
+									<MenuItem Header="Color">
+										<MenuItem StaysOpenOnClick="True"  InputGestureText="Background">
+											<MenuItem.Header>
+												<xctk:ColorPicker Width="45" ShowTabHeaders="False" ColorMode="ColorCanvas" SelectedColor="{Binding SelectedColor}" DisplayColorAndName="False" ShowDropDownButton="False" />
+											</MenuItem.Header>
+										</MenuItem>
+										<MenuItem StaysOpenOnClick="True" InputGestureText="Border">
+											<MenuItem.Header>
+												<xctk:ColorPicker Width="45" ShowTabHeaders="False" ColorMode="ColorCanvas" SelectedColor="{Binding Color}" DisplayColorAndName="False" ShowDropDownButton="False" />
+											</MenuItem.Header>
+										</MenuItem>
 									</MenuItem>
-
+									<Separator />
+									<MenuItem Header="Copy" Command="{Binding CopyCommand}" InputGestureText="Ctrl + C" />
 								</ContextMenu>
 							</components:RectangleObject.ContextMenu>
 

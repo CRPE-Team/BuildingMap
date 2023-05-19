@@ -41,12 +41,12 @@ namespace BuildingMap.UI.Visual.Pages.ViewModel
 
 			MapEditModeViewModel = editModeViewModel;
 
-			SelectImageCommand = new RelayCommand(InsertElementImpl, CanInsertElement);
+			PasteElementCommand = new RelayCommand(InsertElementImpl, CanInsertElement);
 
 			Update();
 		}
 
-		public RelayCommand SelectImageCommand { get; }
+		public RelayCommand PasteElementCommand { get; }
 
 		public MapEditModeViewModel MapEditModeViewModel { get; }
 
