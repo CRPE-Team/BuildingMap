@@ -55,7 +55,7 @@ namespace BuildingMap.UI.Visual.Components.View
 			if (_grid == null) return;
 
             var offset = (position.ToVector() + (_grid.RenderOffset / 2).FloorInt() * 2) * _grid.GridSize;
-            UpdateOffset((offset / _grid.GridSize).Round() * _grid.GridSize);
+            UpdateOffset((offset / _grid.GridSize - new Vector(0.001, 0.001)).Round() * _grid.GridSize);
         }
 
         protected virtual void UpdateOffset(Vector position)
