@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Windows.Media;
 using BuildingMap.Core;
 using BuildingMap.UI.Logic;
 using BuildingMap.UI.Visual.Pages.ViewModel;
@@ -11,30 +10,29 @@ namespace BuildingMap.UI.Visual.Logics
 	{
 		private readonly MapManager _mapManager;
 		private readonly ClipboardManager _clipboardManager;
+		private readonly SettingsManager _settingsManager;
 		private readonly Func<MapItemViewModel> _mapItemFactory;
 
 		public MapItemsFactory(
-			MapManager mapManager, 
-			ClipboardManager clipboardManager, 
+			MapManager mapManager,
+			ClipboardManager clipboardManager,
+			SettingsManager settingsManager,
 			Func<MapItemViewModel> mapItemFactory)
 		{
 			_mapManager = mapManager;
 			_clipboardManager = clipboardManager;
+			_settingsManager = settingsManager;
 			_mapItemFactory = mapItemFactory;
 		}
 
 		public MapItemViewModel CreateNew()
 		{
-			var viewModel = Create(new MapItem() { Id = _mapManager.Map.GetNextItemId() });
+			return CreateNew(_settingsManager.SelectedStyle);
+		}
 
-			viewModel.Radius = 10;
-			viewModel.Color = Color.FromRgb(0x00, 0xD3, 0xEA);
-			viewModel.SelectedColor = Color.FromRgb(0x00, 0xF3, 0xEA);
-			viewModel.FontSize = 12;
-			viewModel.ForegroundColor = Color.FromRgb(0x00, 0x00, 0x00);
-			viewModel.ImageScale = 0.8;
-
-			return viewModel;
+		public MapItemViewModel CreateNew(ItemStyle style)
+		{
+			return Create(new MapItem() { Id = _mapManager.Map.GetNextItemId(), StyleId = style.Id });
 		}
 
 		public MapItemViewModel Create(MapItem mapItem)

@@ -224,7 +224,7 @@ namespace BuildingMap.UI.Visual.Pages.ViewModel
 		private void RemoveItem(MapItemViewModel viewModel)
 		{
 			Items.Remove(viewModel);
-			_floor.MapItems.Remove(viewModel.MapItem.Id);
+			_mapManager.Map.TryRemoveItem(viewModel.MapItem);
 		}
 	}
 }

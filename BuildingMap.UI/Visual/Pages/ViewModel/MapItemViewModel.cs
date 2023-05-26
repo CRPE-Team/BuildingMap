@@ -1,12 +1,9 @@
-﻿using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.IO;
+﻿using System.Collections.ObjectModel;
 using System.Windows;
-using System.Windows.Media;
 using BuildingMap.Core;
 using BuildingMap.UI.Logic;
+using BuildingMap.UI.Visual.Components.ViewModel;
 using BuildingMap.UI.Visual.Utils;
-using Microsoft.Win32;
 using Xceed.Wpf.Toolkit;
 
 namespace BuildingMap.UI.Visual.Pages.ViewModel
@@ -18,23 +15,21 @@ namespace BuildingMap.UI.Visual.Pages.ViewModel
 
 		private bool _isSelected;
 
-		public MapItemViewModel(MapManager mapManager, ClipboardManager clipboardManager)
+		public MapItemViewModel(TemplateViewModel templateViewModel, MapManager mapManager, ClipboardManager clipboardManager)
 		{
 			_mapManager = mapManager;
 			_clipboardManager = clipboardManager;
 
-			AddImageCommand = new RelayCommand(AddImage);
-			RemoveImageCommand = new RelayCommand(RemoveImage, () => HasImage);
+			TemplateViewModel = templateViewModel;
+
 			CopyCommand = new RelayCommand(CopyToClipboard);
 		}
 
-		public RelayCommand AddImageCommand { get; set; }
-		public RelayCommand RemoveImageCommand { get; set; }
 		public RelayCommand CopyCommand { get; set; }
 
-		public MapItem MapItem { get; private set; }
+		public TemplateViewModel TemplateViewModel { get; set; }
 
-		public bool HasImage => ImageData != null;
+		public MapItem MapItem { get; private set; }
 
 		public ObservableCollection<ColorItem> AvailableColors { get; } = new();
 
@@ -61,42 +56,14 @@ namespace BuildingMap.UI.Visual.Pages.ViewModel
 			}
 		}
 
-		public Color Color
-		{
-			get => MapItem.Color.ToWindows();
-			set
-			{
-				MapItem.Color = value.ToDrawing();
-				OnPropertyChanged();
-			}
-		}
-
-		public Color SelectedColor
-		{
-			get => MapItem.SelectedColor.ToWindows();
-			set
-			{
-				MapItem.SelectedColor = value.ToDrawing();
-				OnPropertyChanged();
-			}
-		}
-
 		public bool IsSelected
 		{
 			get => _isSelected;
 			set
 			{
 				_isSelected = value;
-				OnPropertyChanged();
-			}
-		}
+				if (value) TemplateViewModel.Select();
 
-		public double Radius
-		{
-			get => MapItem.Radius;
-			set
-			{
-				MapItem.Radius = value;
 				OnPropertyChanged();
 			}
 		}
@@ -111,26 +78,6 @@ namespace BuildingMap.UI.Visual.Pages.ViewModel
 			}
 		}
 
-		public int FontSize
-		{
-			get => MapItem.FontSize;
-			set
-			{
-				MapItem.FontSize = value;
-				OnPropertyChanged();
-			}
-		}
-
-		public Color ForegroundColor
-		{
-			get => MapItem.ForegroundColor.ToWindows();
-			set
-			{
-				MapItem.ForegroundColor = value.ToDrawing();
-				OnPropertyChanged();
-			}
-		}
-
 		public RotationAngle RotationAngle
 		{
 			get => MapItem.RotationAngle;
@@ -141,65 +88,15 @@ namespace BuildingMap.UI.Visual.Pages.ViewModel
 			}
 		}
 
-		public byte[] ImageData
-		{
-			get
-			{
-				return MapItem.ImageId == null ? null : _mapManager.Map.ImagesData.GetValueOrDefault(MapItem.ImageId);
-			}
-			set
-			{
-				if (value == null)
-				{
-					if (MapItem.ImageId != null)
-					{
-						_mapManager.Map.RemoveImage(MapItem.ImageId);
-						MapItem.ImageId = null;
-					}	
-				}
-				else
-				{
-					MapItem.ImageId = _mapManager.Map.AddNewImage(value);
-				}
-				
-				OnPropertyChanged();
-				OnPropertyChanged(nameof(HasImage));
-			}
-		}
-
-		public double ImageScale
-		{
-			get => MapItem.ImageScale;
-			set
-			{
-				MapItem.ImageScale = value;
-				OnPropertyChanged();
-			}
-		}
-
 		public void Initialize(MapItem mapItem)
 		{
 			MapItem = mapItem;
+			TemplateViewModel.Initialize(_mapManager.Map.Styles[mapItem.StyleId]);
 		}
 
 		public void CopyToClipboard()
 		{
 			_clipboardManager.SetData(MapItem);
-		}
-
-		private void AddImage()
-		{
-			var openFileDialog = new OpenFileDialog();
-			var result = openFileDialog.ShowDialog();
-
-			if (!result.Value) return;
-
-			ImageData = File.ReadAllBytes(openFileDialog.FileName);
-		}
-
-		private void RemoveImage()
-		{
-			ImageData = null;
 		}
 	}
 }

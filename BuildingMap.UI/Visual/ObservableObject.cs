@@ -10,6 +10,11 @@ namespace BuildingMap.UI.Visual
 	{
 		public event PropertyChangedEventHandler PropertyChanged;
 
+		public void OnChanged()
+		{
+			OnPropertyChanged(string.Empty);
+		}
+
 		public void OnPropertyChanged([CallerMemberName] string propertyName = "")
 		{
 			PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));

@@ -22,7 +22,16 @@
 	</Page.Resources>
 
 	<Grid>
-		<components.core:DragGrid>
+		<Grid.RowDefinitions>
+			<RowDefinition Height="auto" />
+			<RowDefinition />
+		</Grid.RowDefinitions>
+
+		<Grid Grid.Row="0" Panel.ZIndex="1000" Visibility="{Binding CurrentFloor.MapEditModeViewModel.AllowEdit, Converter={StaticResource boolToVisibilityConverter}}">
+			<components:ToolBarView DataContext="{Binding ToolBar}"/>
+		</Grid>
+
+		<components.core:DragGrid Grid.Row="1">
 			<components:BuildingGrid 
 				x:Name="buildingGrid"
 				DataContext="{Binding CurrentFloor}"
@@ -123,10 +132,10 @@
 						<components:RectangleObject 
 							Position="{Binding Position}" 
 							Size="{Binding Size}"
-							Color="{Binding Color}"
-							SelectedColor="{Binding SelectedColor}"
+							Color="{Binding TemplateViewModel.Color}"
+							SelectedColor="{Binding TemplateViewModel.SelectedColor}"
 							Selected="{Binding IsSelected}"
-							Radius="{Binding Radius}">
+							Radius="{Binding TemplateViewModel.Radius}">
 
 							<b:Interaction.Triggers>
 								<b:EventTrigger EventName="MouseUp">
@@ -136,17 +145,17 @@
 
 							<components:RectangleObject.ContextMenu>
 								<ContextMenu>
-									<MenuItem Header="Add image on element" Command="{Binding AddImageCommand}" />
-									<MenuItem Header="Remove image from element" Command="{Binding RemoveImageCommand}" />
+									<MenuItem Header="Add image on element" Command="{Binding TemplateViewModel.AddImageCommand}" />
+									<MenuItem Header="Remove image from element" Command="{Binding TemplateViewModel.RemoveImageCommand}" />
 									<MenuItem Header="Color">
 										<MenuItem StaysOpenOnClick="True"  InputGestureText="Background">
 											<MenuItem.Header>
-												<xctk:ColorPicker Width="45" ShowTabHeaders="False" ColorMode="ColorCanvas" SelectedColor="{Binding SelectedColor}" DisplayColorAndName="False" ShowDropDownButton="False" />
+												<xctk:ColorPicker Width="45" ShowTabHeaders="False" ColorMode="ColorCanvas" SelectedColor="{Binding TemplateViewModel.SelectedColor}" DisplayColorAndName="False" ShowDropDownButton="False" />
 											</MenuItem.Header>
 										</MenuItem>
 										<MenuItem StaysOpenOnClick="True" InputGestureText="Border">
 											<MenuItem.Header>
-												<xctk:ColorPicker Width="45" ShowTabHeaders="False" ColorMode="ColorCanvas" SelectedColor="{Binding Color}" DisplayColorAndName="False" ShowDropDownButton="False" />
+												<xctk:ColorPicker Width="45" ShowTabHeaders="False" ColorMode="ColorCanvas" SelectedColor="{Binding TemplateViewModel.Color}" DisplayColorAndName="False" ShowDropDownButton="False" />
 											</MenuItem.Header>
 										</MenuItem>
 									</MenuItem>
@@ -156,6 +165,7 @@
 							</components:RectangleObject.ContextMenu>
 
 							<Image
+								DataContext="{Binding TemplateViewModel}"
 								RenderTransformOrigin="0.5 0.5" 
 								Margin="{Binding Source={x:Static components:RectangleObject.AuraSize}}"
 								Source="{Binding ImageData}">
@@ -182,7 +192,8 @@
 				</components:BuildingGrid.ItemTemplate>
 
 			</components:BuildingGrid>
+
+			<components:FloorSelectorView DataContext="{Binding FloorSelector}" />
 		</components.core:DragGrid>
-		<components:FloorSelectorView DataContext="{Binding FloorSelector}" />
 	</Grid>
 </Page>
