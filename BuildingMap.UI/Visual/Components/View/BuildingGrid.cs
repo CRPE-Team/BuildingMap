@@ -13,6 +13,7 @@ namespace BuildingMap.UI.Visual.Components.View
 	public partial class BuildingGrid : ObservableGrid, IDraggable
     {
 		public static readonly DependencyProperty AllowEditProperty = DependencyPropertyEx.Register<bool, BuildingGrid>();
+		public static readonly DependencyProperty AllowDragProperty = DependencyPropertyEx.Register<bool, BuildingGrid>(true);
 		public static readonly DependencyProperty OffsetProperty = DependencyPropertyEx.Register<Vector, BuildingGrid>(OnOffsetChanged, FrameworkPropertyMetadataOptions.BindsTwoWayByDefault);
 		public static readonly DependencyProperty ZoomProperty = DependencyPropertyEx.Register<double, BuildingGrid>(OnZoomChanged, ZoomCoerce, FrameworkPropertyMetadataOptions.BindsTwoWayByDefault, 1);
 		public static readonly DependencyProperty MousePositionProperty = DependencyPropertyEx.Register<Vector, BuildingGrid>(FrameworkPropertyMetadataOptions.SubPropertiesDoNotAffectRender | FrameworkPropertyMetadataOptions.BindsTwoWayByDefault);
@@ -32,10 +33,13 @@ namespace BuildingMap.UI.Visual.Components.View
         private BackgroundImage _imageBackground;
 		private IDrawable _drawable;
 
-        public bool CanDrag => Mouse.LeftButton == MouseButtonState.Pressed || Mouse.RightButton == MouseButtonState.Pressed;
+        public bool CanDrag => (Mouse.LeftButton == MouseButtonState.Pressed || Mouse.RightButton == MouseButtonState.Pressed) && AllowDrag;
 
 		[Bindable(true)]
 		public bool AllowEdit { get => (bool) GetValue(AllowEditProperty); set => SetValue(AllowEditProperty, value); }
+
+		[Bindable(true)]
+		public bool AllowDrag { get => (bool) GetValue(AllowDragProperty); set => SetValue(AllowDragProperty, value); }
 
 		[Bindable(true)]
 		public double Zoom { get => (double) GetValue(ZoomProperty); set => SetValue(ZoomProperty, value); }

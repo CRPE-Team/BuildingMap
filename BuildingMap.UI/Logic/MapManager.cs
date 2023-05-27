@@ -14,6 +14,7 @@ namespace BuildingMap.UI.Logic
 		public Map Map { get; private set; }
 
 		public event EventHandler MapLoaded;
+		public event EventHandler MapMoved;
 		public event EventHandler FloorsChanged;
 		public event EventHandler<StyleUpdateEventArgs> StyleChanged;
 
@@ -24,7 +25,12 @@ namespace BuildingMap.UI.Logic
 
 		public void SetEmptyMap()
 		{
-			var map = new Map();
+			var map = new Map() 
+			{
+				GridSize = 5,
+				Zoom = 1
+			};
+
 			AddSystemStyles(map);
 			AddNewFloor(map);
 
@@ -42,6 +48,11 @@ namespace BuildingMap.UI.Logic
 		public void UpdateStyle(object sender, ItemStyle style, string propertyName)
 		{
 			StyleChanged?.Invoke(sender, new StyleUpdateEventArgs(style, propertyName));
+		}
+
+		public void MapUpdated(object sender)
+		{
+			MapMoved?.Invoke(sender, new EventArgs());
 		}
 
 		private void AddSystemStyles(Map map)

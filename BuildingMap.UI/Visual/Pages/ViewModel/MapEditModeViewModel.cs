@@ -1,13 +1,10 @@
 ﻿using System;
-using System.Windows;
 using BuildingMap.UI.Logic;
 
 namespace BuildingMap.UI.Visual.Pages.ViewModel
 {
 	public class MapEditModeViewModel : ObservableObject
 	{
-		private bool _allowEdit = true;
-
 		private BackgroundImageViewModel _backgroundImageViewModel;
 
 		private readonly MapManager _mapManager;
@@ -40,15 +37,15 @@ namespace BuildingMap.UI.Visual.Pages.ViewModel
 
 		public bool AllowEdit
 		{
-			get => _allowEdit;
+			get => _settingsManager.AllowEdit;
 			set
 			{
-				_allowEdit = value;
+				_settingsManager.SetAllowEdit(value);
 				OnPropertyChanged();
 			}
 		}
 
-		public void ChangeAllowEdit()
+		public void SwitchAllowEdit()
 		{
 			AllowEdit = !AllowEdit;
 		}

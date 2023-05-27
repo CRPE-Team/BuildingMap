@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using System.Numerics;
 using System.Threading;
 using BuildingMap.Core.Utils;
 
@@ -11,6 +12,14 @@ namespace BuildingMap.Core
 		private int _styleIdIncrementor;
 
 		public string Name { get; set; }
+
+		public bool ReadOnly { get; set; }
+
+		public int GridSize { get; set; }
+
+		public Vector2 Offest { get; set; }
+
+		public double Zoom { get; set; }
 
 		public int ItemIdIncrementor { get => _itemIdIncrementor; set => _itemIdIncrementor = value; }
 

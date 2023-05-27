@@ -18,11 +18,6 @@ namespace BuildingMap.UI.Visual.Pages.ViewModel
 
 		private MapItemViewModel _drawingItem;
 
-		private int _gridSize = 5;
-		private Vector _offset;
-		private Color _background;
-		private double _zoom = 1;
-
 		private Floor _floor;
 
 		private readonly MapManager _mapManager;
@@ -42,8 +37,6 @@ namespace BuildingMap.UI.Visual.Pages.ViewModel
 			MapEditModeViewModel = editModeViewModel;
 
 			PasteElementCommand = new RelayCommand(InsertElementImpl, CanInsertElement);
-
-			Update();
 		}
 
 		public RelayCommand PasteElementCommand { get; }
@@ -56,21 +49,34 @@ namespace BuildingMap.UI.Visual.Pages.ViewModel
 
 		public int GridSize
 		{
-			get => _gridSize;
+			get => _mapManager.Map.GridSize;
 			set
 			{
-				_gridSize = value;
+				_mapManager.Map.GridSize = value;
 				OnPropertyChanged();
+				_mapManager.MapUpdated(this);
 			}
 		}
 
 		public Vector Offset
 		{
-			get => _offset;
+			get => _mapManager.Map.Offest.ToVector();
 			set
 			{
-				_offset = value;
+				_mapManager.Map.Offest = value.ToNumerics();
 				OnPropertyChanged();
+				_mapManager.MapUpdated(this);
+			}
+		}
+
+		public double Zoom
+		{
+			get => _mapManager.Map.Zoom;
+			set
+			{
+				_mapManager.Map.Zoom = value;
+				OnPropertyChanged();
+				_mapManager.MapUpdated(this);
 			}
 		}
 
@@ -80,16 +86,6 @@ namespace BuildingMap.UI.Visual.Pages.ViewModel
 			set
 			{
 				_floor.BackgroundColor = value.ToDrawing();
-				OnPropertyChanged();
-			}
-		}
-
-		public double Zoom
-		{
-			get => _zoom;
-			set
-			{
-				_zoom = value;
 				OnPropertyChanged();
 			}
 		}
@@ -170,11 +166,11 @@ namespace BuildingMap.UI.Visual.Pages.ViewModel
 			SelectedItem = null;
 		}
 
-		public void Update()
+		public void Update(Floor floor)
 		{
 			Items.Clear();
 
-			_floor = _mapManager.Map.GetFloorByNumber(_settingsManager.SelectedFloor);
+			_floor = floor;
 			foreach (var mapItem in _floor.MapItems.Values)
 			{
 				var mapItemViewModel = _mapItemsFactory.Create(mapItem);
