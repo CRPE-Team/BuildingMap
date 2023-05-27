@@ -8,7 +8,7 @@ using BuildingMap.UI.Visual.Utils;
 
 namespace BuildingMap.UI.Visual.Components.View
 {
-    public partial class RectangleObject : IDraggable
+	public partial class RectangleObject : IDraggable
 	{
 		public static readonly DependencyProperty AllowDragProperty = DependencyPropertyEx.Register<bool, RectangleObject>(true);
 
