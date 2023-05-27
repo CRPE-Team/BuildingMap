@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Drawing;
 using System.Linq;
 using System.Numerics;
 using System.Threading;
@@ -20,6 +21,8 @@ namespace BuildingMap.Core
 		public Vector2 Offest { get; set; }
 
 		public double Zoom { get; set; }
+
+		public Color BackgroundColor { get; set; }
 
 		public int ItemIdIncrementor { get => _itemIdIncrementor; set => _itemIdIncrementor = value; }
 

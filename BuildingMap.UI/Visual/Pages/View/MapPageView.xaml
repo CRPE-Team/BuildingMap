@@ -28,68 +28,29 @@
 			<RowDefinition />
 		</Grid.RowDefinitions>
 
-		<Grid Grid.Row="0" Panel.ZIndex="1000" Visibility="{Binding CurrentFloor.MapEditModeViewModel.AllowEdit, Converter={StaticResource boolToVisibilityConverter}}">
+		<Grid Grid.Row="0" Panel.ZIndex="1000" Visibility="{Binding MapEditModeViewModel.AllowEdit, Converter={StaticResource boolToVisibilityConverter}}">
 			<components:ToolBarView DataContext="{Binding ToolBar}"/>
 		</Grid>
 
 		<Grid Grid.Row="1">
-			<components:BuildingGrid 
-				DataContext="{Binding BackFloor}"
-				ItemsSource="{Binding Items}" 
-				AllowEdit="False" 
-				AllowDrag="False"
-				Offset="{Binding Offset}" 
-				Zoom="{Binding Zoom}">
-				<components:BuildingGrid.Grid>
-					<components:BackgroundGrid GridSize="{Binding GridSize}"/>
-				</components:BuildingGrid.Grid>
-
-				<components:BuildingGrid.ItemTemplate>
-					<DataTemplate>
-						<components:RectangleObject 
-							Opacity="0.2"
-							Position="{Binding Position}" 
-							Size="{Binding Size}"
-							Selected="False"
-							Radius="{Binding TemplateViewModel.Radius}"
-							Color="{Binding TemplateViewModel.Color}">
-
-							<Image
-								DataContext="{Binding TemplateViewModel}"
-								RenderTransformOrigin="0.5 0.5" 
-								Margin="{Binding Source={x:Static components:RectangleObject.AuraSize}}"
-								Source="{Binding ImageData}">
-								<Image.RenderTransform>
-									<ScaleTransform ScaleX="{Binding ImageScale}" ScaleY="{Binding ImageScale}" />
-								</Image.RenderTransform>
-							</Image>
-
-						</components:RectangleObject>
-					</DataTemplate>
-				</components:BuildingGrid.ItemTemplate>
-			</components:BuildingGrid>
-
 			<components.core:DragGrid>
-				<components:BuildingGrid 
-				x:Name="buildingGrid"
-				DataContext="{Binding CurrentFloor}"
+				<components:BuildingGrid
 				Background="{Binding Background, Converter={StaticResource colorToBrushConverter}}"
-				ItemsSource="{Binding Items}" 
 				AllowEdit="{Binding MapEditModeViewModel.AllowEdit}" 
 				Offset="{Binding Offset}" 
 				Zoom="{Binding Zoom}"
-				MousePosition="{Binding MousePosition}">
+				MousePosition="{Binding CurrentFloor.MousePosition}">
 
 					<b:Interaction.Triggers>
 						<b:EventTrigger EventName="StartDraw">
-							<b:CallMethodAction TargetObject="{Binding}" MethodName="OnStartDraw"/>
+							<b:CallMethodAction TargetObject="{Binding CurrentFloor}" MethodName="OnStartDraw"/>
 						</b:EventTrigger>
 						<b:EventTrigger EventName="StopDraw">
-							<b:CallMethodAction TargetObject="{Binding}" MethodName="OnStopDraw"/>
+							<b:CallMethodAction TargetObject="{Binding CurrentFloor}" MethodName="OnStopDraw"/>
 						</b:EventTrigger>
 
 						<b:EventTrigger EventName="KeyUp" SourceObject="{Binding MainWindow, Source={x:Static Application.Current}}">
-							<b:CallMethodAction TargetObject="{Binding}" MethodName="OnKeyUp" />
+							<b:CallMethodAction TargetObject="{Binding CurrentFloor}" MethodName="OnKeyUp" />
 						</b:EventTrigger>
 						<b:EventTrigger EventName="MouseUp">
 							<b:CallMethodAction TargetObject="{Binding}" MethodName="OnMouseUp" />
@@ -99,19 +60,19 @@
 						</b:EventTrigger>
 
 						<b:KeyTrigger Key="C" FiredOn="KeyDown" Modifiers="Ctrl">
-							<b:CallMethodAction TargetObject="{Binding}" MethodName="CopyElement" />
+							<b:CallMethodAction TargetObject="{Binding CurrentFloor}" MethodName="CopyElement" />
 						</b:KeyTrigger>
 						<b:KeyTrigger Key="V" FiredOn="KeyDown" Modifiers="Ctrl">
-							<b:CallMethodAction TargetObject="{Binding}" MethodName="InsertElement" />
+							<b:CallMethodAction TargetObject="{Binding CurrentFloor}" MethodName="InsertElement" />
 						</b:KeyTrigger>
 						<b:KeyTrigger Key="E" FiredOn="KeyDown" Modifiers="Ctrl">
 							<b:CallMethodAction TargetObject="{Binding MapEditModeViewModel}" MethodName="SwitchAllowEdit" />
 						</b:KeyTrigger>
 						<b:KeyTrigger Key="Delete" FiredOn="KeyDown">
-							<b:CallMethodAction TargetObject="{Binding}" MethodName="DeleteElement" />
+							<b:CallMethodAction TargetObject="{Binding CurrentFloor}" MethodName="DeleteElement" />
 						</b:KeyTrigger>
 						<b:KeyTrigger Key="Esc" FiredOn="KeyDown">
-							<b:CallMethodAction TargetObject="{Binding}" MethodName="Unselect" />
+							<b:CallMethodAction TargetObject="{Binding CurrentFloor}" MethodName="Unselect" />
 						</b:KeyTrigger>
 					</b:Interaction.Triggers>
 
@@ -165,7 +126,31 @@
 						</components:BackgroundImage>
 					</components:BuildingGrid.BackgroundImage>
 
-					<components:BuildingGrid.ItemTemplate>
+					<components.core:ObservableItemsTemplate DataContext="{Binding BackFloor}" ItemsSource="{Binding Items}">
+						<DataTemplate>
+							<components:RectangleObject 
+								Grid.ZIndex="-8"
+								AllowDrag="False"
+								Position="{Binding Position}" 
+								Size="{Binding Size}"
+								Radius="{Binding TemplateViewModel.Radius}"
+								Opacity="0.2"
+								Color="{Binding TemplateViewModel.Color}">
+								<Image
+									DataContext="{Binding TemplateViewModel}"
+									RenderTransformOrigin="0.5 0.5" 
+									Margin="{Binding Source={x:Static components:RectangleObject.AuraSize}}"
+									Source="{Binding ImageData}">
+									<Image.RenderTransform>
+										<ScaleTransform ScaleX="{Binding ImageScale}" ScaleY="{Binding ImageScale}" />
+									</Image.RenderTransform>
+								</Image>
+
+							</components:RectangleObject>
+						</DataTemplate>
+					</components.core:ObservableItemsTemplate>
+
+					<components.core:ObservableItemsTemplate x:Name="currentFloor" DataContext="{Binding CurrentFloor}" ItemsSource="{Binding Items}">
 						<DataTemplate>
 							<components:RectangleObject 
 							Position="{Binding Position}" 
@@ -177,7 +162,7 @@
 
 								<b:Interaction.Triggers>
 									<b:EventTrigger EventName="MouseUp">
-										<b:CallMethodAction TargetObject="{Binding DataContext, Source={x:Reference Name=buildingGrid}}" MethodName="OnClickItem" />
+										<b:CallMethodAction TargetObject="{Binding DataContext, Source={x:Reference Name=currentFloor}}" MethodName="OnClickItem" />
 									</b:EventTrigger>
 								</b:Interaction.Triggers>
 
@@ -214,8 +199,8 @@
 
 								<Label 
 								Content="{Binding Text}"
-								FontSize="{Binding FontSize}" 
-								Foreground="{Binding ForegroundColor, Converter={StaticResource colorToBrushConverter}}"
+								FontSize="{Binding TemplateViewModel.FontSize}" 
+								Foreground="{Binding TemplateViewModel.ForegroundColor, Converter={StaticResource colorToBrushConverter}}"
 								HorizontalAlignment="Center" 
 								VerticalAlignment="Center"
 								RenderTransformOrigin="0.5 0.5"
@@ -227,7 +212,7 @@
 
 							</components:RectangleObject>
 						</DataTemplate>
-					</components:BuildingGrid.ItemTemplate>
+					</components.core:ObservableItemsTemplate>
 
 				</components:BuildingGrid>
 

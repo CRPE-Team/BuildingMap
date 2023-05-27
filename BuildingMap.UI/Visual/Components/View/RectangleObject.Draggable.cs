@@ -1,14 +1,18 @@
 ﻿using System;
+using System.ComponentModel;
 using System.Windows;
 using System.Windows.Input;
 using BuildingMap.UI.Visual.Components.View.Core;
 using BuildingMap.UI.Visual.Components.View.Core.Utils;
+using BuildingMap.UI.Visual.Utils;
 
 namespace BuildingMap.UI.Visual.Components.View
 {
     public partial class RectangleObject : IDraggable
-    {
-        private static readonly DragContext DragContext = new DragContext();
+	{
+		public static readonly DependencyProperty AllowDragProperty = DependencyPropertyEx.Register<bool, RectangleObject>(true);
+
+		private static readonly DragContext DragContext = new DragContext();
 
         private ResizeDirection? _reseDirection;
         private Vector _resizeFirst;
@@ -16,7 +20,10 @@ namespace BuildingMap.UI.Visual.Components.View
 
         private Cursor _defaultCursor;
 
-        public bool CanDrag => Grid.AllowEdit && Mouse.LeftButton == MouseButtonState.Pressed;
+		[Bindable(true)]
+		public bool AllowDrag { get => (bool) GetValue(AllowDragProperty); set => SetValue(AllowDragProperty, value); }
+
+		public bool CanDrag => AllowDrag && Grid.AllowEdit && Mouse.LeftButton == MouseButtonState.Pressed;
 
         public DragContext StartDrag()
         {

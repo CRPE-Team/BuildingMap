@@ -12,50 +12,77 @@ namespace BuildingMap.UI.Visual.Components.View.Core
 {
 	public class ObservableGrid : Grid
 	{
-		public static readonly DependencyProperty ItemsSourceProperty = DependencyPropertyEx.Register<IEnumerable, ObservableGrid>(OnItemsSourceChanged, new ObservableCollection<object>());
-		public static readonly DependencyProperty ItemTemplateProperty = DependencyPropertyEx.Register<DataTemplate, ObservableGrid>(OnItemTemplateChanged);
+		private readonly Dictionary<object, ObservableItemsTemplate> _teplateMap = new Dictionary<object, ObservableItemsTemplate>();
+		private readonly Dictionary<ObservableItemsTemplate, List<object>> _itemsCache = new Dictionary<ObservableItemsTemplate, List<object>>();
 
-		private List<object> _itemsCache = new List<object>();
-
-		[Bindable(true)]
-		public IEnumerable ItemsSource { get => (IEnumerable) GetValue(ItemsSourceProperty); set => SetValue(ItemsSourceProperty, value); }
-
-		[Bindable(true)]
-		public DataTemplate ItemTemplate { get => (DataTemplate) GetValue(ItemTemplateProperty); set => SetValue(ItemTemplateProperty, value); }
-
-		protected void AddItem(object item)
+		protected override void OnVisualChildrenChanged(DependencyObject visualAdded, DependencyObject visualRemoved)
 		{
-			Add(new[] { item });
-		}
+			base.OnVisualChildrenChanged(visualAdded, visualRemoved);
 
-		protected void RemoveItem(object item)
-		{
-			Remove(new[] { item });
-		}
-
-		private static void OnItemsSourceChanged(ObservableGrid d, DependencyPropertyChangedEventArgs e)
-		{
-			if (e.OldValue is INotifyCollectionChanged oldValue)
+			if (visualAdded is ObservableItemsTemplate addedItemsTemplate)
 			{
-				oldValue.CollectionChanged -= d.OnItemsSourceCollectionChanged;
+				_itemsCache.Add(addedItemsTemplate, new List<object>());
+
+				addedItemsTemplate.ItemsSourceChanged += OnItemsSourceChanged;
+				OnItemsSourceChanged(addedItemsTemplate, new DependencyPropertyChangedEventArgs(ObservableItemsTemplate.ItemsSourceProperty, null, addedItemsTemplate.ItemsSource));
+
+				addedItemsTemplate.ItemTemplateChanged += OnItemTemplateChanged;
+				OnItemsSourceChanged(addedItemsTemplate, new DependencyPropertyChangedEventArgs(ObservableItemsTemplate.ItemTemplateProperty, null, addedItemsTemplate.ItemTemplate));
 			}
 
-			if (e.OldValue is IList oldList) d.Remove(oldList);
+			if (visualRemoved is ObservableItemsTemplate removedItemsTemplate)
+			{
+				removedItemsTemplate.ItemsSourceChanged -= OnItemsSourceChanged;
+				OnItemsSourceChanged(removedItemsTemplate, new DependencyPropertyChangedEventArgs(ObservableItemsTemplate.ItemsSourceProperty, removedItemsTemplate.ItemsSource, null));
+
+				removedItemsTemplate.ItemTemplateChanged -= OnItemTemplateChanged;
+				OnItemsSourceChanged(removedItemsTemplate, new DependencyPropertyChangedEventArgs(ObservableItemsTemplate.ItemTemplateProperty, removedItemsTemplate.ItemTemplate, null));
+
+				_itemsCache.Remove(removedItemsTemplate);
+			}
+		}
+
+		protected void AddItem(object item, ObservableItemsTemplate template)
+		{
+			Add(new[] { item }, template);
+		}
+
+		protected void RemoveItem(object item, ObservableItemsTemplate template)
+		{
+			Remove(new[] { item }, template);
+		}
+
+		private void OnItemsSourceChanged(ObservableItemsTemplate d, DependencyPropertyChangedEventArgs e)
+		{
+			if (e.OldValue != null) _teplateMap.Remove(e.OldValue);
+			if (e.NewValue != null) _teplateMap[d.ItemsSource] = d;
+
+			if (e.OldValue is INotifyCollectionChanged oldValue)
+			{
+				oldValue.CollectionChanged -= OnItemsSourceCollectionChanged;
+			}
+
+			if (e.OldValue is IList oldList) Remove(oldList, d);
 
 			if (e.NewValue is INotifyCollectionChanged newValue)
 			{
-				newValue.CollectionChanged += d.OnItemsSourceCollectionChanged;
+				newValue.CollectionChanged += OnItemsSourceCollectionChanged;
 			}
 
-			if (e.NewValue is IList newList) d.Add(newList);
+			if (e.NewValue is IList newList) Add(newList, d);
 		}
 
-		private static void OnItemTemplateChanged(ObservableGrid d, DependencyPropertyChangedEventArgs e)
+		private void OnItemTemplateChanged(ObservableItemsTemplate d, DependencyPropertyChangedEventArgs e)
 		{
-			var items = d._itemsCache.ToArray();
+			var items = _itemsCache.ToArray();
 
-			d.Remove(items);
-			d.Add(items);
+			if (d.ItemsSource != null)
+			{
+				_teplateMap[d.ItemsSource] = d;
+			}	
+
+			Remove(items, d);
+			Add(items, d);
 		}
 
 		private void OnItemsSourceCollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
@@ -63,35 +90,40 @@ namespace BuildingMap.UI.Visual.Components.View.Core
 			switch (e.Action)
 			{
 				case NotifyCollectionChangedAction.Add:
-					Add(e.NewItems);
+					Add(e.NewItems, _teplateMap.GetValueOrDefault(sender));
 					break;
 
 				case NotifyCollectionChangedAction.Remove:
-					Remove(e.OldItems);
+					Remove(e.OldItems, _teplateMap.GetValueOrDefault(sender));
 					break;
 
 				case NotifyCollectionChangedAction.Replace:
-					Remove(e.OldItems);
-					Add(e.NewItems);
+				{
+					var template = _teplateMap.GetValueOrDefault(sender);
+					Remove(e.OldItems, template);
+					Add(e.NewItems, template);
 					break;
+				}
 
 				case NotifyCollectionChangedAction.Move:
-
 					break;
 
 				case NotifyCollectionChangedAction.Reset:
-					Remove(_itemsCache.ToArray());
+				{
+					var template = _teplateMap.GetValueOrDefault(sender);
+					Remove(_itemsCache.GetValueOrDefault(template)?.ToArray() ?? new object[0], template);
 					break;
+				}
 			}
 		}
 
-		private void Add(IList items)
+		private void Add(IList items, ObservableItemsTemplate template)
 		{
 			foreach (var item in items)
 			{
-				_itemsCache.Add(item);
+				if (template != null) _itemsCache[template].Add(item);
 
-				var child = ItemTemplate?.LoadContent();
+				var child = template.ItemTemplate?.LoadContent();
 				if (child is FrameworkElement frameworkElement)
 				{
 					frameworkElement.DataContext = item;
@@ -100,11 +132,11 @@ namespace BuildingMap.UI.Visual.Components.View.Core
 			}
 		}
 
-		private void Remove(IList items)
+		private void Remove(IList items, ObservableItemsTemplate template)
 		{
 			foreach (var item in items)
 			{
-				_itemsCache.Remove(item);
+				if (template != null) _itemsCache[template].Remove(item);
 
 				foreach (var child in Children.OfType<FrameworkElement>().ToArray())
 				{

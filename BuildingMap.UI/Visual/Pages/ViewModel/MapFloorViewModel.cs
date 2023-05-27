@@ -27,68 +27,20 @@ namespace BuildingMap.UI.Visual.Pages.ViewModel
 		public MapFloorViewModel(
 			MapManager mapManager,
 			SettingsManager settingsManager,
-			MapItemsFactory mapItemsFactory,
-			MapEditModeViewModel editModeViewModel)
+			MapItemsFactory mapItemsFactory)
 		{
 			_mapManager = mapManager;
 			_settingsManager = settingsManager;
 			_mapItemsFactory = mapItemsFactory;
-
-			MapEditModeViewModel = editModeViewModel;
 
 			PasteElementCommand = new RelayCommand(InsertElementImpl, CanInsertElement);
 		}
 
 		public RelayCommand PasteElementCommand { get; }
 
-		public MapEditModeViewModel MapEditModeViewModel { get; }
-
 		public ObservableCollection<MapItemViewModel> Items { get; } = new ObservableCollection<MapItemViewModel>();
 
 		public MapItemViewModel SelectedItem { get; private set; }
-
-		public int GridSize
-		{
-			get => _mapManager.Map.GridSize;
-			set
-			{
-				_mapManager.Map.GridSize = value;
-				OnPropertyChanged();
-				_mapManager.MapUpdated(this);
-			}
-		}
-
-		public Vector Offset
-		{
-			get => _mapManager.Map.Offest.ToVector();
-			set
-			{
-				_mapManager.Map.Offest = value.ToNumerics();
-				OnPropertyChanged();
-				_mapManager.MapUpdated(this);
-			}
-		}
-
-		public double Zoom
-		{
-			get => _mapManager.Map.Zoom;
-			set
-			{
-				_mapManager.Map.Zoom = value;
-				OnPropertyChanged();
-				_mapManager.MapUpdated(this);
-			}
-		}
-
-		public Color Background
-		{
-			get => _floor.BackgroundColor.ToWindows();
-			set
-			{
-				_floor.BackgroundColor = value.ToDrawing();
-				OnPropertyChanged();
-			}
-		}
 
 		public Vector MousePosition { get; set; }
 
@@ -149,14 +101,6 @@ namespace BuildingMap.UI.Visual.Pages.ViewModel
 		{
 			_singleKeyDownFlag = false;
 		}
-	
-		public void OnMouseUp(object sender, MouseButtonEventArgs args)
-		{
-			if (DragManager.WasMoving) return;
-			if (!DataContextHelper.TryGetDataContext(Mouse.DirectlyOver, out var dataContext) || dataContext != this) return;
-			
-			if (args.ChangedButton == MouseButton.Left) Unselect();
-		}
 
 		public void DeleteElement()
 		{
@@ -181,11 +125,6 @@ namespace BuildingMap.UI.Visual.Pages.ViewModel
 		public void Unselect()
 		{
 			SelectItem(null);
-		}
-
-		public void OnContextMenuOpening(object sender, ContextMenuEventArgs args)
-		{
-			args.Handled = !MapEditModeViewModel.AllowEdit;
 		}
 
 		private bool CanInsertElement()
